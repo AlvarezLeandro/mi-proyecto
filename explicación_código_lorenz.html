@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Maestra de Exposición: Sistema de Lorenz</title>
+    <!-- MathJax para visualización matemática nítida -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #475569;
+            --border: #E2E8F0;
+            --primary: #2563EB;
+            --primary-light: #EFF6FF;
+            --primary-dark: #1D4ED8;
+            --accent: #E11D48;
+            --accent-light: #FFF1F2;
+            --success: #059669;
+            --success-light: #ECFDF5;
+            --warning: #D97706;
+            --warning-light: #FFFBEB;
+            --gold: #B45309;
+            --gold-light: #FEF3C7;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        nav.toc {
+            width: 330px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2.5rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            font-size: 0.88rem;
+        }
+
+        nav.toc h3 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+        }
+
+        nav.toc ul { list-style: none; }
+        nav.toc li { margin-bottom: 0.55rem; }
+        nav.toc a {
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+        nav.toc a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        nav.toc .badge-rec {
+            background: #FEF3C7;
+            color: #92400E;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            text-transform: uppercase;
+        }
+
+        main.content {
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1000px;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1.25;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 3.5rem;
+            margin-bottom: 1.2rem;
+            color: #0F172A;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            color: #1E293B;
+        }
+
+        p { margin-bottom: 1.2rem; }
+
+        /* Banner de Recomendaciones para la Presentación */
+        .presentation-banner {
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+            border: 2px solid #F59E0B;
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1);
+        }
+        .presentation-banner h3 {
+            color: #92400E;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+        }
+        .presentation-banner p { color: #78350F; font-size: 0.95rem; }
+        .slide-rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+        .slide-rec-card {
+            background: #FFFFFF;
+            border: 1px solid #FDE68A;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .slide-rec-card .card-badge {
+            display: inline-block;
+            background: #F59E0B;
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .slide-rec-card h4 { color: #0F172A; margin-bottom: 0.4rem; font-size: 1rem; }
+        .slide-rec-card p { font-size: 0.86rem; color: #475569; margin-bottom: 0; }
+
+        /* Callouts */
+        .callout {
+            border-left: 4px solid var(--primary);
+            background: var(--primary-light);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.8rem 0;
+        }
+        .callout.warning { border-left-color: var(--warning); background: var(--warning-light); }
+        .callout.success { border-left-color: var(--success); background: var(--success-light); }
+        .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+        .callout h4 { margin-bottom: 0.4rem; font-weight: 700; }
+
+        pre {
+            background: #0F172A;
+            color: #F8FAFC;
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 1.2rem 0;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: #E2E8F0;
+            color: #0F172A;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+        pre code { background: transparent; color: inherit; padding: 0; }
+
+        .line-comment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0 2.2rem 0;
+            font-size: 0.9rem;
+        }
+        .line-comment-table th, .line-comment-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .line-comment-table th { background: #F8FAFC; font-weight: 600; text-align: left; }
+        .line-comment-table td.code-col {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: #F8FAFC;
+            white-space: pre-wrap;
+            color: #1E293B;
+            width: 42%;
+        }
+
+        .diagram-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .flow-box {
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            color: var(--primary-dark);
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            min-width: 160px;
+        }
+        .flow-arrow { font-size: 1.6rem; color: var(--text-muted); font-weight: bold; }
+
+        .quiz-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .quiz-card h4 { margin-bottom: 1rem; font-size: 1.05rem; color: #0F172A; }
+        .quiz-options { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+        .quiz-btn {
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.92rem;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .quiz-btn:hover { background: var(--primary-light); border-color: var(--primary); }
+        .quiz-feedback { padding: 0.9rem; border-radius: 6px; font-size: 0.9rem; display: none; line-height: 1.5; }
+        .quiz-feedback.correct { background: var(--success-light); border: 1px solid var(--success); color: #065F46; }
+        .quiz-feedback.incorrect { background: var(--accent-light); border: 1px solid var(--accent); color: #9F1239; }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            nav.toc { width: 100%; height: auto; position: static; border-right: none; }
+            main.content { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <!-- NAVEGACIÓN LATERAL -->
+    <nav class="toc">
+        <h3>Índice de Lorenz</h3>
+        <ul>
+            <li><a href="#recomendaciones">★ Bloques para tu Presentación</a></li>
+            <li><a href="#intro">1. Fundamentos Físicos de Lorenz</a></li>
+            <li><a href="#bloque0">2. Ecuaciones y Simulación Base</a></li>
+            <li><a href="#bloque1">3. Bloque 1: Series Temporales</a></li>
+            <li><a href="#bloque2">4. Bloque 2: Atractor 3D <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque3">5. Bloque 3: Sensibilidad (Mariposa) <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque4">6. Bloque 4: Lyapunov (Benettin) <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque5">7. Bloque 5: Influencia de &rho;</a></li>
+            <li><a href="#bloque6">8. Bloque 6: Sección de Poincaré <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque7">9. Bloque 7: Diagrama de Bifurcaciones</a></li>
+            <li><a href="#bloque8">10. Bloque 8: Animación 3D</a></li>
+            <li><a href="#bloque9">11. Bloque 9: Verificación Numérica</a></li>
+            <li><a href="#quiz">12. Quiz de Autoevaluación</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="content">
+        <h1>Guía Maestra: Simulación y Análisis del Sistema de Lorenz</h1>
+        <div class="subtitle">
+            Documento pedagógico exhaustivo de <strong>Lorenz_final.py</strong>.<br>
+            Explicación paso a paso de cada bloque de código, fundamentación física y guía de exposición oral.
+        </div>
+
+        <!-- SECCIÓN DE RECOMENDACIONES ARRIBA DEL TODO -->
+        <section id="recomendaciones" class="presentation-banner">
+            <h3>★ Recomendación Estratégica: ¿Qué Bloques Conviene Explicar en tu Presentación?</h3>
+            <p>
+                Si tienes entre 10 y 15 minutos para presentar, <strong>no intentes mostrar todas las líneas de código</strong>. Concéntrate en <strong>4 bloques clave</strong> que demuestran dominio matemático, habilidad computacional y comprensión del caos:
+            </p>
+
+            <div class="slide-rec-grid">
+                <div class="slide-rec-card">
+                    <span class="card-badge">1. La Geometría</span>
+                    <h4>Bloque 2: Atractor 3D y Puntos Fijos</h4>
+                    <p><strong>Por qué:</strong> Visualmente impactante. Muestra cómo se descarta el transitorio inicial y cómo dedujiste analíticamente los puntos fijos \(C^+\) y \(C^-\).</p>
+                </div>
+
+                <div class="slide-rec-card">
+                    <span class="card-badge">2. La Definición de Caos</span>
+                    <h4>Bloque 3: Sensibilidad y Escala Log</h4>
+                    <p><strong>Por qué:</strong> Enseña el "Efecto Mariposa". Explica por qué se usa escala semilogarítmica: la recta muestra el crecimiento exponencial y luego la saturación física.</p>
+                </div>
+
+                <div class="slide-rec-card">
+                    <span class="card-badge">3. El Núcleo Numérico</span>
+                    <h4>Bloque 4: Lyapunov y Benettin</h4>
+                    <p><strong>Por qué:</strong> Es el corazón conceptual del proyecto. Demuestra que entiendes por qué no se puede calcular Lyapunov sin renormalizar el vector de separación a distancia \(d_0\).</p>
+                </div>
+
+                <div class="slide-rec-card">
+                    <span class="card-badge">4. Geometría Fractal</span>
+                    <h4>Bloque 6: Sección de Poincaré</h4>
+                    <p><strong>Por qué:</strong> Muestra elegancia algorítmica: cómo interpolar linealmente los cruces del plano \(z=27\) con condición direccional \(\dot{z} > 0\).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. INTRODUCCIÓN -->
+        <section id="intro">
+            <h2>1. Fundamentos Físicos del Sistema de Lorenz</h2>
+            <p>
+                Derivado en 1963 por Edward Lorenz al simplificar las ecuaciones de Navier-Stokes y de conducción de calor en una celda atmosférica bidimensional calentada por abajo (convección de Rayleigh-Bénard):
+            </p>
+
+            $$\begin{cases}
+            \frac{dx}{dt} = \sigma (y - x) \\
+            \frac{dy}{dt} = x (\rho - z) - y \\
+            \frac{dz}{dt} = x y - \beta z
+            \end{cases}$$
+
+            <div class="callout">
+                <h4>Variables y Parámetros:</h4>
+                <ul>
+                    <li><strong>\(x(t)\):</strong> Velocidad angular de rotación del cilindro de fluido. Si \(x > 0\), el fluido gira en un sentido; si \(x < 0\), en el sentido contrario.</li>
+                    <li><strong>\(y(t)\):</strong> Diferencia de temperatura horizontal entre las corrientes que suben y las que bajan.</li>
+                    <li><strong>\(z(t)\):</strong> Desviación del perfil vertical de temperatura respecto al gradiente lineal de pura conducción.</li>
+                    <li><strong>\(\sigma = 10.0\):</strong> Número de Prandtl (viscosidad / difusividad térmica).</li>
+                    <li><strong>\(\rho = 28.0\):</strong> Número de Rayleigh normalizado (diferencia de temperatura entre placas). En 28 el sistema es caótico.</li>
+                    <li><strong>\(\beta = 8/3\):</strong> Parámetro geométrico dependiente de la anchura de las celdas convectivas.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. SIMULACIÓN BASE -->
+        <section id="bloque0">
+            <h2>2. Ecuaciones y Simulación Base</h2>
+            <p>
+                El diseño modular del código concentra el modelo dinámico y el solucionador numérico en dos funciones compactas para que todos los análisis posteriores las reutilicen sin repetir código.
+            </p>
+
+            <pre><code>def lorenz(t, estado, sigma=10.0, rho=28.0, beta=8.0 / 3.0):
+    x, y, z = estado
+    dx_dt = sigma * (y - x)
+    dy_dt = x * (rho - z) - y
+    dz_dt = x * y - beta * z
+    return [dx_dt, dy_dt, dz_dt]
+
+def simular(estado_0, t_span, t_eval, sigma=10.0, rho=28.0, beta=8.0 / 3.0):
+    return solve_ivp(lorenz, t_span, estado_0, t_eval=t_eval,
+                     args=(sigma, rho, beta), method="RK45", rtol=1e-8, atol=1e-8)</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Parámetro</th><th>¿Qué hace y por qué se diseñó así?</th></tr>
+                <tr>
+                    <td class="code-col">t en lorenz(t, estado)</td>
+                    <td>Exigido por la firma de <code>solve_ivp</code>. Aunque Lorenz es autónomo (no hay dependencia explícita de \(t\)), el integrador necesita pasar el tiempo actual.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">method="RK45"</td>
+                    <td>Implementa el esquema Runge-Kutta 4(5) de Dormand-Prince con tamaño de paso temporal adaptativo. Aumenta el paso en zonas suaves y lo achica automáticamente en zonas de giros rápidos.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">rtol=1e-8, atol=1e-8</td>
+                    <td>En sistemas caóticos, tolerancias estándar (\(10^{-3}\)) acumulan error exponencial en pocos segundos. Con \(10^{-8}\) aseguramos que la trayectoria calculada sea fiel a la física del atractor.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 3. BLOQUE 1 -->
+        <section id="bloque1">
+            <h2>3. Bloque 1: Evolución Temporal de las Variables</h2>
+            <p>
+                Genera las gráficas de \(x(t), y(t), z(t)\) individuales y conjuntas. Muestra la <strong>aperiodicidad</strong>: oscilaciones irregulares que jamás se repiten exactamente.
+            </p>
+
+            <pre><code>def bloque_1_evolucion_temporal(t, x, y, z):
+    # Gráficos individuales para x, y, z
+    series = [("x(t) - Convección", x, COLOR_X, "01_evolucion_x.png"),
+              ("y(t) - Gradiente Térmico", y, COLOR_Y, "01_evolucion_y.png"),
+              ("z(t) - Perfil Vertical", z, COLOR_Z, "01_evolucion_z.png")]
+    for titulo, datos, col, arch in series:
+        fig, ax = plt.subplots(figsize=(10, 4))
+        ax.plot(t, datos, color=col, lw=1.1)
+        ax.set(title=f"Sistema de Lorenz: {titulo}", xlabel="Tiempo $t$ [u.a.]", ylabel="Amplitud [u.a.]")
+        ax.grid(True)
+        plt.tight_layout()
+        plt.savefig(os.path.join(CARPETA_SALIDA, arch), dpi=200)
+
+    # Panel sincronizado con sharex=True
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(11, 7), sharex=True)
+    ax1.plot(t, x, color=COLOR_X, lw=1.0, label="$x(t)$"); ax1.grid(True); ax1.legend(loc="upper right")
+    ax2.plot(t, y, color=COLOR_Y, lw=1.0, label="$y(t)$"); ax2.grid(True); ax2.legend(loc="upper right")
+    ax3.plot(t, z, color=COLOR_Z, lw=1.0, label="$z(t)$"); ax3.grid(True); ax3.legend(loc="upper right")
+    ...</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>Explicación Detallada</th></tr>
+                <tr>
+                    <td class="code-col">sharex=True</td>
+                    <td>Vincula el eje horizontal de los tres paneles. Permite ver que cuando \(x(t)\) cruza por cero (inversión de convección), \(y(t)\) cambia bruscamente de signo al unísono.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">COLOR_X, COLOR_Y, COLOR_Z</td>
+                    <td>Paleta cerúleo (`#0284C7`), ámbar (`#D97706`) y esmeralda (`#059669`) de alto contraste sobre blanco puro, idéntica en todos los gráficos del proyecto.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 4. BLOQUE 2 -->
+        <section id="bloque2">
+            <h2>4. Bloque 2: Atractor Extraño 3D y Puntos Fijos</h2>
+            <p>
+                Representa el espacio de fases tridimensional \((x, y, z)\). Muestra las dos alas o lóbulos de la mariposa y los centros de rotación inestables.
+            </p>
+
+            <pre><code>def bloque_2_atractor_3d(t, x, y, z, t_corte=5.0):
+    mask = t >= t_corte  # Descarta transitorio inicial
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(projection="3d")
+    ax.plot(x[mask], y[mask], z[mask], color=COLOR_TRAZADO, lw=0.75, alpha=0.9, label="Atractor de Lorenz")
+
+    # Puntos fijos de convección constante C+ y C-
+    xc, zc = np.sqrt((8/3) * (28.0 - 1.0)), 28.0 - 1.0
+    ax.scatter([xc, -xc], [xc, -xc], [zc, zc], color=COLOR_ALT, s=35, label=r"Puntos fijos $C^+, C^-$", zorder=5)
+
+    ax.view_init(elev=22, azim=-62)
+    ...</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Operación</th><th>Fundamento Físico y Matemático</th></tr>
+                <tr>
+                    <td class="code-col">mask = t >= t_corte</td>
+                    <td>La condición inicial \((1,1,1)\) no forma parte del atractor; el sistema tarda unos segundos en viajar hacia él. Si no filtramos \(t < 5\), se vería una recta cruzando el espacio que ensucia el gráfico.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">xc = np.sqrt(beta * (rho - 1))</td>
+                    <td>
+                        Se deduce igualando \(\dot{x}=\dot{y}=\dot{z}=0\):
+                        $$x^* = y^* = \pm\sqrt{\beta(\rho - 1)} \approx \pm 8.485, \quad z^* = \rho - 1 = 27$$
+                        Para \(\rho=28\) son <em>focos inestables</em>: la trayectoria se enrolla hacia afuera en espiral hasta que es expulsada al otro lóbulo.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="code-col">view_init(elev=22, azim=-62)</td>
+                    <td>Ángulo de cámara óptimo en 3D que permite apreciar simultáneamente la separación de las dos alas y el plano basal de bifurcación.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 5. BLOQUE 3 -->
+        <section id="bloque3">
+            <h2>5. Bloque 3: Sensibilidad a Condiciones Iniciales (Efecto Mariposa)</h2>
+            <p>
+                Evoluciona dos trayectorias cuyas condiciones iniciales difieren en una cantidad microscópica:
+                $$\Delta x_0 = 10^{-8}$$
+            </p>
+
+            <pre><code>def bloque_3_sensibilidad():
+    t_eval = np.linspace(0.0, 35.0, 3500)
+    s1 = simular([1.0, 1.0, 1.0], (0.0, 35.0), t_eval)
+    s2 = simular([1.0 + 1e-8, 1.0, 1.0], (0.0, 35.0), t_eval)
+
+    # Distancia euclídea vectorial tridimensional en cada instante t
+    d_t = np.linalg.norm(s1.y - s2.y, axis=0)
+
+    # Gráfico semilogarítmico para revelar la pendiente lambda
+    ax2.semilogy(t, d_t, color=COLOR_Y, lw=1.3, label=r"Distancia euclídea $d(t)$")
+    ax2.axhline(1e-8, color="#64748B", ls=":", label=r"Separación inicial ($10^{-8}$)")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Concepto</th><th>Explicación</th></tr>
+                <tr>
+                    <td class="code-col">np.linalg.norm(s1.y - s2.y, axis=0)</td>
+                    <td>Calcula vectorialmente \(d(t) = \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2 + (z_1-z_2)^2}\) para los 3500 instantes de tiempo en una sola operación de NumPy ultrarrápida.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">ax2.semilogy(...)</td>
+                    <td>Dado que \(d(t) = d_0 e^{\lambda t}\), en escala logarítmica \(\ln d(t) = \ln d_0 + \lambda t\) es <strong>una línea recta</strong> con pendiente \(\lambda\). Además muestra la saturación en \(d \approx 30\) cuando \(t > 18\).</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 6. BLOQUE 4 -->
+        <section id="bloque4">
+            <h2>6. Bloque 4: Máximo Exponente de Lyapunov (Algoritmo de Benettin)</h2>
+            <p>
+                Calcula numéricamente la tasa de divergencia exponencial evitando la saturación geométrica.
+            </p>
+
+            <div class="diagram-container">
+                <h4>Esquema de Benettin (1976)</h4>
+                <div class="diagram-flow">
+                    <div class="flow-box">Condición de referencia \(\mathbf{s}_{ref}\)<br>Perturbación: \(\mathbf{s}_{ref} + d_0\)</div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="flow-box">Integrar tiempo \(\tau = 0.1\)<br>Medir separación \(d_1\)</div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="flow-box">Acumular:<br>\(\ln(d_1 / d_0)\)</div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="flow-box">Renormalizar a \(d_0\):<br>\(\mathbf{s}_{fin} + d_0 \frac{\boldsymbol{\delta}}{d_1}\)</div>
+                </div>
+            </div>
+
+            <pre><code>def bloque_4_lyapunov(d0=1e-8, tau=0.1, n_pasos=250):
+    # Pre-evolución para asegurar estar dentro del atractor
+    s_ref = solve_ivp(lorenz, (0.0, 10.0), [1.0, 1.0, 1.0], method="RK45").y[:, -1]
+    s_pert = s_ref.copy(); s_pert[0] += d0
+
+    suma_log = 0.0
+    tiempos, lyap_acumulado = [], []
+
+    for k in range(1, n_pasos + 1):
+        s_r_fin = solve_ivp(lorenz, (0.0, tau), s_ref, method="RK45").y[:, -1]
+        s_p_fin = solve_ivp(lorenz, (0.0, tau), s_pert, method="RK45").y[:, -1]
+
+        delta = s_p_fin - s_r_fin
+        d1 = np.linalg.norm(delta)
+        suma_log += np.log(d1 / d0)
+
+        t_actual = k * tau
+        tiempos.append(t_actual)
+        lyap_acumulado.append(suma_log / t_actual)
+
+        # Renormalización: recoloca s_pert a distancia d0 en la dirección de divergencia
+        s_ref = s_r_fin
+        s_pert = s_r_fin + d0 * (delta / d1)
+
+    return lyap_acumulado[-1]</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea</th><th>¿Por qué es indispensable?</th></tr>
+                <tr>
+                    <td class="code-col">delta / d1</td>
+                    <td>Es el <strong>vector unitario director</strong> de máxima expansión local. Al multiplicar por \(d_0\), devolvemos la segunda partícula al régimen infinitesimal, pero <em>conservando la dirección en la que el flujo tiende a estirar el espacio</em>.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">suma_log / t_actual</td>
+                    <td>Aplica el promedio temporal de la definición teórica:
+                    $$\lambda_{\max} \approx \frac{1}{T} \sum_{k=1}^N \ln\left(\frac{d_1^{(k)}}{d_0}\right) \to 0.9056 \text{ [1/u.a.]}$$</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 7. BLOQUE 5 -->
+        <section id="bloque5">
+            <h2>7. Bloque 5: Influencia del Parámetro &rho; (Ruta al Caos)</h2>
+            <p>
+                Este bloque analiza cómo la diferencia de temperatura Rayleigh \(\rho\) transforma radicalmente la dinámica del fluido: desde el estado de equilibrio estacionario (\(\rho < 24.74\)) hasta el régimen caótico (\(\rho=28\)) y turbulento (\(\rho=100\)). Incluye tanto la <strong>comparación visual de atractores 3D</strong> como el <strong>barrido numérico del exponente de Lyapunov \(\lambda(\rho)\)</strong>.
+            </p>
+
+            <pre><code>def bloque_5_influencia_rho():
+    # 1. Comparación visual de atractores para 4 regímenes
+    rhos = [14.0, 21.0, 28.0, 100.0]
+    titulos = [r"$\rho = 14$ (Puntos fijos estables)", r"$\rho = 21$ (Pre-caos transitorio)",
+               r"$\rho = 28$ (Atractor caótico clásico)", r"$\rho = 100$ (Caos extendido)"]
+    colores = [COLOR_X, COLOR_Y, COLOR_Z, COLOR_ALT]
+
+    fig, axes = plt.subplots(2, 2, figsize=(13, 10), subplot_kw={"projection": "3d"})
+    t_eval = np.linspace(5.0, 30.0, 2500)
+    for r, ax, col, tit in zip(rhos, axes.flatten(), colores, titulos):
+        sol = simular([1.0, 1.0, 1.0], (0.0, 30.0), t_eval, rho=r)
+        ax.plot(sol.y[0], sol.y[1], sol.y[2], color=col, lw=0.8, alpha=0.9)
+        ax.set_title(tit, fontsize=10, pad=8)
+        ax.set(xlabel="x", ylabel="y", zlabel="z")
+        ax.view_init(elev=20, azim=-60)
+
+    plt.suptitle(r"Evolución de los Atractores al Modificar $\rho$", y=0.98)
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "05_influencia_rho_atractores.png"), dpi=200)
+
+    # 2. Barrido de Lyapunov en función de rho
+    rhos_barrido = [10.0, 14.0, 18.0, 22.0, 25.0, 28.0, 35.0, 45.0, 60.0]
+    lyaps = []
+    for r in rhos_barrido:
+        # Mini-Benettin (tau=0.1, N=100)
+        s_r = solve_ivp(lorenz, (0.0, 10.0), [1.0, 1.0, 1.0], args=(10.0, r, 8/3), method="RK45").y[:, -1]
+        s_p = s_r.copy(); s_p[0] += 1e-6
+        s_log = 0.0
+        for _ in range(100):
+            sr_next = solve_ivp(lorenz, (0.0, 0.1), s_r, args=(10.0, r, 8/3), method="RK45").y[:, -1]
+            sp_next = solve_ivp(lorenz, (0.0, 0.1), s_p, args=(10.0, r, 8/3), method="RK45").y[:, -1]
+            diff = sp_next - sr_next
+            d1 = np.linalg.norm(diff)
+            s_log += np.log(d1 / 1e-6)
+            s_r = sr_next
+            s_p = sr_next + 1e-6 * (diff / d1)
+        lyaps.append(s_log / 10.0)
+
+    fig, ax = plt.subplots(figsize=(9, 4.5))
+    ax.plot(rhos_barrido, lyaps, marker="o", color=COLOR_Y, lw=1.5, markersize=5)
+    ax.axhline(0.0, color="#475569", ls=":", label=r"Frontera de caos ($\lambda = 0$)")
+    ax.axvline(24.74, color=COLOR_ALT, ls="--", label=r"Hopf subcrítica ($\rho_H \approx 24.74$)")
+    ax.set(title=r"Máximo Exponente de Lyapunov en Función de $\rho$", xlabel=r"$\rho$", ylabel=r"$\lambda_{\max}$")
+    ax.grid(True); ax.legend(loc="upper left")
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "05_lyapunov_vs_rho.png"), dpi=200)
+    print("✓ Bloque 5 completado: Influencia de rho y barrido de Lyapunov guardados.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>¿Por qué se hace así?</th></tr>
+                <tr>
+                    <td class="code-col">rhos = [14.0, 21.0, 28.0, 100.0]</td>
+                    <td>Selección de 4 valores representativos documentados en la física no lineal: \(\rho=14\) (convección laminar estable), \(\rho=21\) (transitorio previo al caos), \(\rho=28\) (atractor extraño mariposa), \(\rho=100\) (órbitas gigantescas de convección violenta).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">subplot_kw={"projection": "3d"}</td>
+                    <td>Configura los 4 paneles de la grilla \(2 \times 2\) como espacios tridimensionales para poder comparar lado a lado la deformación geométrica del atractor en los mismos ejes.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">s_r = solve_ivp(..., (0.0, 10.0), ...).y[:, -1]</td>
+                    <td><strong>Pre-evolución de relajación:</strong> Antes de medir Lyapunov para cada \(\rho\), se simula durante 10 segundos para desechar el transitorio inicial y garantizar que el algoritmo de Benettin mida sobre el atractor real propio de ese valor de \(\rho\).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">ax.axvline(24.74, ls="--")</td>
+                    <td><strong>Bifurcación de Hopf subcrítica:</strong> Marca el punto teórico exacto \(\rho_H = \sigma \frac{\sigma + \beta + 3}{\sigma - \beta - 1} \approx 24.74\). A la izquierda de esta línea el exponente es negativo o nulo (\(\lambda \le 0\)); a la derecha cruza el cero hacia arriba (\(\lambda > 0\)), demostrando el nacimiento del caos determinista.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 8. BLOQUE 6 -->
+        <section id="bloque6">
+            <h2>8. Bloque 6: Sección de Poincaré (Corte z = 27 con dz/dt > 0)</h2>
+            <p>
+                Transforma el flujo continuo tridimensional en un <strong>mapa estroboscópico bidimensional discreto</strong>.
+            </p>
+
+            <pre><code>def bloque_6_seccion_poincare(z_corte=27.0):
+    sol = simular([1.0, 1.0, 1.0], (0.0, 120.0), np.linspace(10.0, 120.0, 15000))
+    x, y, z = sol.y
+    cruces_x, cruces_y = [], []
+
+    for k in range(len(z) - 1):
+        # Detección de cruce de abajo hacia arriba:
+        if z[k] < z_corte and z[k + 1] >= z_corte:
+            frac = (z_corte - z[k]) / (z[k + 1] - z[k])
+            xi = x[k] + frac * (x[k + 1] - x[k])
+            yi = y[k] + frac * (y[k + 1] - y[k])
+            # dz/dt = x*y - beta*z > 0
+            if (xi * yi - (8.0 / 3.0) * z_corte) > 0:
+                cruces_x.append(xi)
+                cruces_y.append(yi)
+
+    fig, ax = plt.subplots(figsize=(8, 7))
+    ax.scatter(cruces_x, cruces_y, s=10, color=COLOR_X, alpha=0.75, edgecolors="none",
+               label=f"Cruces ($N = {len(cruces_x)}$)")
+    ax.set(title=f"Sección de Poincaré: Plano $z = {z_corte}$, con $\\dot{{z}} > 0$",
+           xlabel="Coordenada $x$ [u.a.]", ylabel="Coordenada $y$ [u.a.]")
+    ax.grid(True); ax.legend(loc="upper right")
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "06_seccion_poincare.png"), dpi=200)
+    print(f"✓ Bloque 6 completado: Sección de Poincaré guardada ({len(cruces_x)} cruces).")
+    return len(cruces_x)</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>Explicación Numérica</th></tr>
+                <tr>
+                    <td class="code-col">simular(..., (0.0, 120.0), np.linspace(10.0, 120.0, 15000))</td>
+                    <td>Integra durante 120 segundos (tiempo largo) con 15000 muestras para acumular una cantidad estadísticamente significativa de intersecciones (más de 60 cruces). Se evalúa desde \(t=10\) para ignorar el transitorio.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">frac = (z_corte - z[k]) / (z[k+1] - z[k])</td>
+                    <td><strong>Interpolación lineal:</strong> Como los pasos del integrador son discretos, la probabilidad de que una muestra caiga exactamente en \(z=27.000\) es nula. Con esta fracción encontramos las coordenadas exactas \((x, y)\) en el plano de corte.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">xi*yi - beta*z_corte > 0</td>
+                    <td>Exige que la derivada temporal vertical \(\dot{z}\) sea positiva. Así tomamos solo los cruces <strong>ascendentes</strong>, evitando solapamientos con los cruces de retorno.</td>
+                </tr>
+            </table>
+
+            <div class="callout">
+                <h4>Resultado Físico</h4>
+                En vez de dispersarse como ruido aleatorio, los puntos forman dos aristas curvadas increíblemente finas con estructura <strong>fractal</strong> (dimensión de correlación \(d \approx 2.06\)).
+            </div>
+        </section>
+
+        <!-- 9. BLOQUE 7 -->
+        <section id="bloque7">
+            <h2>9. Bloque 7: Diagrama de Bifurcaciones (rho vs z_max)</h2>
+            <p>
+                Este bloque analiza el comportamiento asintótico del sistema al realizar un barrido continuo en \(\rho \in [10, 38]\), registrando los <strong>máximos locales de la coordenada vertical \(z(t)\)</strong> para cada valor.
+            </p>
+
+            <pre><code>def bloque_7_diagrama_bifurcaciones(rho_min=10.0, rho_max=38.0, n_rhos=60):
+    rhos = np.linspace(rho_min, rho_max, n_rhos)
+    todos_rhos, todos_z_max = [], []
+
+    for r in rhos:
+        # Descartar transitorio (evaluar en [15, 32])
+        sol = simular([1.0, 1.0, 1.0], (0.0, 32.0), np.linspace(15.0, 32.0, 2000), rho=r)
+        z = sol.y[2]
+        # Picos locales: z[k-1] < z[k] > z[k+1]
+        picos = z[1:-1][(z[1:-1] > z[:-2]) & (z[1:-1] > z[2:])]
+        todos_rhos.extend([r] * len(picos))
+        todos_z_max.extend(picos)
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+    ax.scatter(todos_rhos, todos_z_max, s=4, color=COLOR_TRAZADO, alpha=0.6, edgecolors="none")
+    ax.axvline(24.74, color=COLOR_ALT, ls="--", lw=1.2, label=r"Hopf subcrítica ($\rho_H \approx 24.74$)")
+    ax.set(title="Diagrama de Bifurcaciones: Máximos Locales de $z(t)$ vs $\\rho$",
+           xlabel=r"Parámetro $\rho$", ylabel=r"Máximos locales $z_{\max}$")
+    ax.grid(True); ax.legend(loc="upper left")
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "07_diagrama_bifurcaciones.png"), dpi=200)
+    print("✓ Bloque 7 completado: Diagrama de bifurcaciones guardado.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>Explicación</th></tr>
+                <tr>
+                    <td class="code-col">np.linspace(15.0, 32.0, 2000)</td>
+                    <td>Integra durante 32 segundos pero descarta los primeros 15 segundos para registrar únicamente el atractor estacionario libre de transitorios.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">(z[1:-1] > z[:-2]) & (z[1:-1] > z[2:])</td>
+                    <td><strong>Detección vectorial de máximos locales en NumPy:</strong> Compara simultáneamente cada punto con su vecino anterior y posterior en un solo paso de código, evitando bucles <code>for</code> lentos.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">ax.scatter(todos_rhos, todos_z_max, s=4)</td>
+                    <td>Genera una nube de puntos muy pequeños (\(s=4\)) con semitransparencia (\(\alpha=0.6\)) que revela visualmente las zonas de alta densidad orbital. Muestra una línea continua para \(\rho < 24.74\) que estalla en múltiples ramas caóticas al cruzar la bifurcación.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 10. BLOQUE 8 -->
+        <section id="bloque8">
+            <h2>10. Bloque 8: Animación de la Trayectoria 3D (Renderizado y Exportación GIF)</h2>
+            <p>
+                Este bloque toma los datos numéricos de la simulación continua y crea una <strong>animación tridimensional progresiva</strong> donde se observa la trayectoria dibujándose en el espacio, mientras un punto marcador rojo sigue la "cabeza" instantánea del sistema. Finalmente, exporta la animación como un archivo GIF reproducible en cualquier diapositiva o navegador.
+            </p>
+
+            <pre><code>def bloque_8_animacion(t, x, y, z):
+    # Submuestrear a 1000 puntos para optimizar generación
+    sub = max(1, len(t) // 1000)
+    xs, ys, zs = x[::sub], y[::sub], z[::sub]
+
+    fig = plt.figure(figsize=(7, 6))
+    ax = fig.add_subplot(projection="3d")
+    ax.set_xlim(xs.min() - 2, xs.max() + 2)
+    ax.set_ylim(ys.min() - 2, ys.max() + 2)
+    ax.set_zlim(zs.min() - 2, zs.max() + 2)
+    ax.set(title="Evolución Dinámica en el Atractor de Lorenz (3D)", xlabel="x", ylabel="y", zlabel="z")
+    ax.view_init(elev=22, azim=-60)
+
+    linea, = ax.plot([], [], [], color=COLOR_TRAZADO, lw=0.9, alpha=0.9)
+    cabeza, = ax.plot([], [], [], marker="o", color=COLOR_ALT, markersize=6)
+
+    n_frames = 100
+    paso = len(xs) // n_frames
+
+    def actualizar(frame):
+        fin = min(len(xs), (frame + 1) * paso)
+        linea.set_data(xs[:fin], ys[:fin])
+        linea.set_3d_properties(zs[:fin])
+        if fin > 0:
+            cabeza.set_data([xs[fin - 1]], [ys[fin - 1]])
+            cabeza.set_3d_properties([zs[fin - 1]])
+        return linea, cabeza
+
+    anim = FuncAnimation(fig, actualizar, frames=n_frames, interval=100, blit=False)
+    anim.save(os.path.join(CARPETA_SALIDA, "08_animacion_lorenz.gif"), writer=PillowWriter(fps=10))
+    print("✓ Bloque 8 completado: Animación 3D guardada como GIF.")
+    return anim</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>¿Qué hace y por qué se diseñó así?</th></tr>
+                <tr>
+                    <td class="code-col">sub = max(1, len(t) // 1000)<br>xs, ys, zs = x[::sub], ...</td>
+                    <td><strong>Submuestreo (Downsampling):</strong> La simulación original tiene 4000 puntos. Intentar animar 4000 vértices en 3D frame a frame haría que la generación del GIF tarde varios minutos o se trabe. Reducir a 1000 puntos mantiene la curva perfectamente suave y reduce el tiempo de renderizado a pocos segundos.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">ax.set_xlim(...)<br>ax.set_ylim(...)<br>ax.set_zlim(...)</td>
+                    <td><strong>Fijación de límites estáticos:</strong> Si no se fijan los ejes antes de animar, Matplotlib recalcula la escala de la caja 3D en cada frame a medida que la curva crece, provocando un efecto desagradable de "temblor" o "zoom constante".</td>
+                </tr>
+                <tr>
+                    <td class="code-col">linea, = ax.plot([], [], [])<br>cabeza, = ax.plot([], [], [])</td>
+                    <td><strong>Inicialización de artistas vacíos:</strong> En lugar de redibujar la figura entera desde cero en cada fotograma (lo cual consumiría demasiada memoria), se crean dos objetos gráficos vacíos: <code>linea</code> (para la estela azul de la trayectoria) y <code>cabeza</code> (para la esfera roja que lidera el movimiento). La coma <code>linea,</code> extrae el primer elemento de la lista que retorna <code>plot</code>.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">fin = min(len(xs), (frame + 1) * paso)</td>
+                    <td>Calcula cuántos puntos de la trayectoria acumulada deben mostrarse en el fotograma actual. Conforme <code>frame</code> avanza de 0 a 99, <code>fin</code> aumenta progresivamente, dando el efecto de que la curva se va dibujando en el tiempo.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">linea.set_data(...)<br>linea.set_3d_properties(zs[:fin])</td>
+                    <td>En gráficos 3D de Matplotlib, <code>set_data</code> solo actualiza las coordenadas \(X\) e \(Y\). La coordenada tridimensional \(Z\) se debe asignar obligatoriamente mediante <code>set_3d_properties</code>.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">cabeza.set_data([xs[fin-1]], [ys[fin-1]])</td>
+                    <td>Posiciona el punto marcador rojo exactamente en el último punto calculado de la curva (la punta de la trayectoria).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">FuncAnimation(..., interval=100)</td>
+                    <td>Controla el temporizador de la animación. <code>interval=100</code> significa 100 milisegundos entre fotogramas (equivalente a una tasa de refresco de 10 cuadros por segundo o 10 FPS).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">anim.save(..., writer=PillowWriter(fps=10))</td>
+                    <td>Utiliza el motor de imágenes <strong>Pillow</strong> (sin requerir dependencias externas complejas como FFmpeg) para empaquetar los 100 fotogramas en el archivo `08_animacion_lorenz.gif`.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 11. BLOQUE 9 -->
+        <section id="bloque9">
+            <h2>11. Bloque 9: Batería de Verificación Numérica y Reporte Científico</h2>
+            <p>
+                Un código científico riguroso no solo grafica resultados, sino que <strong>audita automáticamente su propia consistencia numérica</strong> antes de dar por válido el estudio.
+            </p>
+
+            <pre><code>def bloque_9_verificacion(sol, lambda_est, n_cruces):
+    pruebas = [
+        ("Simulación temporal completa (RK45)", sol.status == 0),
+        ("Estabilidad numérica (sin NaN ni Inf)", not (np.isnan(sol.y).any() or np.isinf(sol.y).any())),
+        (f"Exponente de Lyapunov positivo ({lambda_est:.3f} > 0)", lambda_est > 0),
+        (f"Concordancia teórica (ref: 0.906, error: {abs(lambda_est - 0.9056)/0.9056*100:.1f}%)", abs(lambda_est - 0.9056) / 0.9056 < 0.10),
+        (f"Sección de Poincaré representativa ({n_cruces} cruces)", n_cruces > 20)
+    ]
+    print("\n--- RESUMEN DE VERIFICACIÓN ---")
+    for nombre, ok in pruebas:
+        print(f" {'✅ [SUPERADA]' if ok else '❌ [FALLIDA]'} {nombre}")
+
+    # Tarjeta gráfica idéntica de reporte
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    ax.axis("off")
+    texto = "RESUMEN DE VERIFICACIÓN NUMÉRICA - SISTEMA DE LORENZ\n\n"
+    for nombre, ok in pruebas:
+        texto += f"• [{'SUPERADA' if ok else 'FALLIDA'}] {nombre}\n\n"
+    ax.text(0.05, 0.90, texto, transform=ax.transAxes, fontsize=10, fontfamily="monospace",
+            bbox=dict(boxstyle="round,pad=0.8", facecolor="#F8FAFC", edgecolor="#CBD5E1", lw=1.2))
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "09_resumen_verificacion.png"), dpi=200)
+    print("✓ Bloque 9 completado: Tarjeta de verificación guardada.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Verificación</th><th>Criterio Físico y Matemático</th></tr>
+                <tr>
+                    <td class="code-col">sol.status == 0</td>
+                    <td><code>solve_ivp</code> retorna 0 si la integración completó con éxito el intervalo temporal \([t_0, t_f]\). Si devolviera -1 significaría que el paso adaptativo colapsó por singularidad.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">not np.isnan(sol.y).any()</td>
+                    <td>Comprueba que ninguna variable se haya desbordado hacia infinito (\(\infty\)) ni haya producido indeterminaciones (`NaN`). Garantiza que el atractor es acotado.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">lambda_est > 0</td>
+                    <td>La firma matemática indispensable del <strong>caos determinista</strong> es la existencia de al menos un exponente de Lyapunov estrictamente positivo.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">abs(lambda - 0.9056)/0.9056 < 0.10</td>
+                    <td>Compara contra el valor universalmente aceptado en la literatura científica para el atractor de Lorenz clásico ($\lambda \approx 0.9056$). Un error relativo menor al 10% es excelente para una integración de tiempo finito.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">n_cruces > 20</td>
+                    <td>Garantiza que la simulación para la sección de Poincaré fue suficientemente larga como para reconstruir la geometría fractal de los cortes sin caer en falsos vacíos estadísticos.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">Tarjeta gráfica (09_resumen_verificacion.png)</td>
+                    <td>Genera una figura limpia con recuadro `monospace` que resume los 5 tests superados, ideal para insertar como diapositiva de conclusiones en tu presentación.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 12. QUIZ -->
+        <section id="quiz">
+            <h2>12. Quiz Interactivo (Autoevaluación para la Defensa)</h2>
+
+            <div class="quiz-card" id="q1">
+                <h4>1. ¿Por qué es indispensable aplicar la renormalización en el método de Benettin para calcular el exponente de Lyapunov?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuiz('q1', 0, false)">A) Porque el método Runge-Kutta pierde precisión si las variables superan el valor 100.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q1', 1, true)">B) Porque las dos trayectorias se saturan a una distancia finita (el tamaño del atractor), dejando de medir la divergencia exponencial local.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q1', 2, false)">C) Para forzar a que el exponente sea siempre positivo.</button>
+                </div>
+                <div class="quiz-feedback" id="q1-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="q2">
+                <h4>2. Si \(\rho < 1\), ¿cuál es el comportamiento físico del sistema de Lorenz?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuiz('q2', 0, true)">A) El origen (0, 0, 0) es un punto fijo globalmente estable: el fluido no tiene suficiente energía térmica y la convección cesa (solo conducción pura).</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q2', 1, false)">B) Se produce caos turbulento infinito.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q2', 2, false)">C) Se generan ciclos límite periódicos.</button>
+                </div>
+                <div class="quiz-feedback" id="q2-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="q3">
+                <h4>3. En el Bloque 2 descartamos los primeros 5 segundos de simulación (t < 5.0). ¿Cuál es la razón matemática?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuiz('q3', 0, false)">A) Porque las ecuaciones de Lorenz no están definidas para tiempos menores a 5.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q3', 1, false)">B) Para acelerar la velocidad de graficación de matplotlib.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q3', 2, true)">C) Para eliminar el transitorio inicial, ya que la condición inicial parte fuera del atractor y tarda un tiempo en posarse sobre su estructura geométrica.</button>
+                </div>
+                <div class="quiz-feedback" id="q3-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="q4">
+                <h4>4. En la sección de Poincaré con el plano \(z = 27\), ¿por qué se exige adicionalmente que \(\dot{z} > 0\)?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuiz('q4', 0, true)">A) Para registrar solo los cruces que atraviesan el plano en una única dirección (ascendente) y obtener un mapa bien definido sin superposiciones de retorno.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q4', 1, false)">B) Porque si \(\dot{z} \le 0\) la trayectoria se detiene por completo.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q4', 2, false)">C) Porque \(z\) nunca puede disminuir en el sistema de Lorenz.</button>
+                </div>
+                <div class="quiz-feedback" id="q4-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="q5">
+                <h4>5. ¿Qué significa físicamente que el máximo exponente de Lyapunov sea \(\lambda \approx 0.906 > 0\)?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuiz('q5', 0, false)">A) Que el sistema es completamente aleatorio y no puede predecirse ni siquiera a corto plazo.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q5', 1, true)">B) Que existe caos determinista: pequeños errores crecen como \(e^{0.906 t}\), fijando un horizonte temporal finito de predictibilidad.</button>
+                    <button class="quiz-btn" onclick="checkQuiz('q5', 2, false)">C) Que el atractor se expande indefinidamente en el espacio tridimensional.</button>
+                </div>
+                <div class="quiz-feedback" id="q5-fb"></div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    const feedbackData = {
+        q1: {
+            correct: "¡Exacto! Como el atractor de Lorenz está confinado en una región de tamaño finito (~30 a 50 unidades), si dos trayectorias divergen, su separación no puede crecer indefinidamente. Benettin resuelve esto devolviendo la trayectoria a distancia d0 en cada intervalo tau, permitiendo medir la tasa de expansión infinitesimal constante.",
+            incorrect: "Incorrecto. Recuerda que el atractor de Lorenz es acotado; por ende, cualquier par de trayectorias se topará con un límite físico máximo de separación si no las renormalizamos."
+        },
+        q2: {
+            correct: "¡Correcto! Físicamente, rho representa la relación entre la flotabilidad inducida por calor y la disipación viscosa. Para rho < 1, la conducción térmica gana y no hay convección (x = y = z = 0).",
+            incorrect: "Incorrecto. Para rho < 1 el gradiente térmico es muy pequeño, por lo que el sistema no convecta y se apaga en el origen (0,0,0)."
+        },
+        q3: {
+            correct: "¡Muy bien! (1, 1, 1) no pertenece estrictamente al atractor extraño. La trayectoria realiza un recorrido de aproximación (transitorio) antes de entrar en las oscilaciones de las alas.",
+            incorrect: "Incorrecto. Las ecuaciones son válidas para todo t >= 0. Se descarta para no ensuciar la figura con la trayectoria de entrada al atractor."
+        },
+        q4: {
+            correct: "¡Excelente! Una sección de Poincaré requiere una transversalidad orientada. Si contáramos las idas y vueltas, la estructura del mapa se mezclaría en dos conjuntos opuestos.",
+            incorrect: "Incorrecto. La coordenada z sube y baja periódicamente; exigimos dz/dt > 0 para capturar solo los cruces en sentido ascendente."
+        },
+        q5: {
+            correct: "¡Correcto! El sistema sigue siendo 100% determinista (sin ruido ni azar), pero su sensibilidad extrema a condiciones iniciales fija un horizonte temporal finito de predictibilidad práctica.",
+            incorrect: "Incorrecto. No es azaroso: las ecuaciones son deterministas. Pero la divergencia exponencial impide pronósticos a largo plazo."
+        }
+    };
+
+    function checkQuiz(qId, optionIdx, isCorrect) {
+        const card = document.getElementById(qId);
+        const fb = document.getElementById(qId + "-fb");
+        const buttons = card.querySelectorAll(".quiz-btn");
+
+        buttons.forEach((btn, idx) => {
+            btn.style.pointerEvents = "none";
+            if (idx === optionIdx) {
+                btn.style.background = isCorrect ? "var(--success-light)" : "var(--accent-light)";
+                btn.style.borderColor = isCorrect ? "var(--success)" : "var(--accent)";
+                btn.style.fontWeight = "bold";
+            }
+        });
+
+        fb.style.display = "block";
+        fb.className = "quiz-feedback " + (isCorrect ? "correct" : "incorrect");
+        fb.innerHTML = isCorrect ? feedbackData[qId].correct : feedbackData[qId].incorrect;
+    }
+</script>
+
+</body>
+</html>

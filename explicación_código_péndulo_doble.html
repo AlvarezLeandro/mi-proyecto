@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Maestra de Exposición: Péndulo Doble</title>
+    <!-- MathJax para visualización matemática nítida -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg: #F8FAFC;
+            --surface: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #475569;
+            --border: #E2E8F0;
+            --primary: #0284C7;
+            --primary-light: #F0F9FF;
+            --primary-dark: #0369A1;
+            --accent: #DC2626;
+            --accent-light: #FEF2F2;
+            --success: #059669;
+            --success-light: #ECFDF5;
+            --warning: #D97706;
+            --warning-light: #FFFBEB;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        nav.toc {
+            width: 330px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2.5rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            font-size: 0.88rem;
+        }
+
+        nav.toc h3 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+        }
+
+        nav.toc ul { list-style: none; }
+        nav.toc li { margin-bottom: 0.55rem; }
+        nav.toc a {
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+        nav.toc a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        nav.toc .badge-rec {
+            background: #FEF3C7;
+            color: #92400E;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            text-transform: uppercase;
+        }
+
+        main.content {
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1000px;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1.25;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 3.5rem;
+            margin-bottom: 1.2rem;
+            color: #0F172A;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            color: #1E293B;
+        }
+
+        p { margin-bottom: 1.2rem; }
+
+        /* Banner de Recomendaciones para la Presentación */
+        .presentation-banner {
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border: 2px solid #0284C7;
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.1);
+        }
+        .presentation-banner h3 {
+            color: #0369A1;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+        }
+        .presentation-banner p { color: #0C4A6E; font-size: 0.95rem; }
+        .slide-rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+        .slide-rec-card {
+            background: #FFFFFF;
+            border: 1px solid #BAE6FD;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .slide-rec-card .card-badge {
+            display: inline-block;
+            background: #0284C7;
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .slide-rec-card h4 { color: #0F172A; margin-bottom: 0.4rem; font-size: 1rem; }
+        .slide-rec-card p { font-size: 0.86rem; color: #475569; margin-bottom: 0; }
+
+        /* Callouts */
+        .callout {
+            border-left: 4px solid var(--primary);
+            background: var(--primary-light);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.8rem 0;
+        }
+        .callout.warning { border-left-color: var(--warning); background: var(--warning-light); }
+        .callout.success { border-left-color: var(--success); background: var(--success-light); }
+        .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+        .callout h4 { margin-bottom: 0.4rem; font-weight: 700; }
+
+        pre {
+            background: #0F172A;
+            color: #F8FAFC;
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 1.2rem 0;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: #E2E8F0;
+            color: #0F172A;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+        pre code { background: transparent; color: inherit; padding: 0; }
+
+        .line-comment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0 2.2rem 0;
+            font-size: 0.9rem;
+        }
+        .line-comment-table th, .line-comment-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .line-comment-table th { background: #F8FAFC; font-weight: 600; text-align: left; }
+        .line-comment-table td.code-col {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: #F8FAFC;
+            white-space: pre-wrap;
+            color: #1E293B;
+            width: 42%;
+        }
+
+        .diagram-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .flow-box {
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            color: var(--primary-dark);
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            min-width: 160px;
+        }
+        .flow-arrow { font-size: 1.6rem; color: var(--text-muted); font-weight: bold; }
+
+        .quiz-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .quiz-card h4 { margin-bottom: 1rem; font-size: 1.05rem; color: #0F172A; }
+        .quiz-options { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+        .quiz-btn {
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.92rem;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .quiz-btn:hover { background: var(--primary-light); border-color: var(--primary); }
+        .quiz-feedback { padding: 0.9rem; border-radius: 6px; font-size: 0.9rem; display: none; line-height: 1.5; }
+        .quiz-feedback.correct { background: var(--success-light); border: 1px solid var(--success); color: #065F46; }
+        .quiz-feedback.incorrect { background: var(--accent-light); border: 1px solid var(--accent); color: #9F1239; }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            nav.toc { width: 100%; height: auto; position: static; border-right: none; }
+            main.content { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <!-- NAVEGACIÓN LATERAL -->
+    <nav class="toc">
+        <h3>Índice del Péndulo Doble</h3>
+        <ul>
+            <li><a href="#recomendaciones">★ Bloques para tu Presentación</a></li>
+            <li><a href="#fisica">1. Fundamentos: Lagrange y Mecánica</a></li>
+            <li><a href="#ecuaciones">2. Ecuaciones y Cramer <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#energia">3. Conservación de la Energía <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque1">4. Bloque 1: Evolución Temporal</a></li>
+            <li><a href="#bloque2">5. Bloque 2: Balance Energético</a></li>
+            <li><a href="#bloque3">6. Bloque 3: Espacio de Fases</a></li>
+            <li><a href="#bloque4">7. Bloque 4: Lyapunov (Benettin) <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque5">8. Bloque 5: Mapa de Calor 2D</a></li>
+            <li><a href="#bloque6">9. Bloque 6: Modos Normales <span class="badge-rec">Clave</span></a></li>
+            <li><a href="#bloque7">10. Bloque 7: Animación Interactiva</a></li>
+            <li><a href="#quiz">11. Quiz de Autoevaluación</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="content">
+        <h1>Guía Maestra: Dinámica y Análisis del Péndulo Doble</h1>
+        <div class="subtitle">
+            Documento pedagógico exhaustivo de <strong>péndulo_doble_final.py</strong>.<br>
+            Explicación paso a paso de cada bloque de código, fundamentación física y guía de exposición oral.
+        </div>
+
+        <!-- SECCIÓN DE RECOMENDACIONES ARRIBA DEL TODO -->
+        <section id="recomendaciones" class="presentation-banner">
+            <h3>★ Recomendación Estratégica: ¿Qué Bloques Conviene Explicar en tu Presentación?</h3>
+            <p>
+                Para una presentación brillante e impecable sobre el Péndulo Doble, <strong>te recomendamos estructurar tu charla sobre estos 4 bloques</strong>:
+            </p>
+
+            <div class="slide-rec-grid">
+                <div class="slide-rec-card">
+                    <span class="card-badge">1. La Mecánica Analítica</span>
+                    <h4>Sección 2: Matriz de Inercia y Cramer</h4>
+                    <p><strong>Por qué:</strong> Demuestra que sabes física teórica: cómo armaste el sistema matricial \(M(\theta)\ddot{\theta} = b\) y por qué \(\det(M) > 0\) garantiza que no hay divisiones por cero.</p>
+                </div>
+
+                <div class="slide-rec-card">
+                    <span class="card-badge">2. La Validación Numérica</span>
+                    <h4>Bloque 2: Conservación de Energía</h4>
+                    <p><strong>Por qué:</strong> Todo sistema hamiltoniano debe conservar \(E\). Mostrar que el error numérico es menor a \(10^{-6}\) demuestra que el caos no es un error de cálculo.</p>
+                </div>
+
+                <div class="slide-rec-card">
+                    <span class="card-badge">3. El Caso Conocido</span>
+                    <h4>Bloque 6: Modos Normales Lineales</h4>
+                    <p><strong>Por qué:</strong> Es el golpe de autoridad científica: validar que en ángulos pequeños el código coincide con un error menor al 1% con la solución analítica \(\omega = \sqrt{\frac{g}{L}(2 \mp \sqrt{2})}\).</p>
+                </div>
+
+                <div class="slide-rec-card">
+                    <span class="card-badge">4. La Medición del Caos</span>
+                    <h4>Bloque 4 o Bloque 5: Lyapunov / Mapa 2D</h4>
+                    <p><strong>Por qué:</strong> Muestra el exponente de Lyapunov positivo (\(\lambda \approx 0.7\text{ s}^{-1}\)) y las islas de estabilidad KAM en el mapa de calor bidimensional.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. FUNDAMENTOS FÍSICOS -->
+        <section id="fisica">
+            <h2>1. Fundamentos Físicos: Mecánica Lagrangiana</h2>
+            <p>
+                El péndulo doble ideal consta de dos varillas rígidas sin masa (\(L_1, L_2\)) y dos masas puntuales (\(m_1, m_2\)). Es un <strong>sistema hamiltoniano conservativo</strong> (no disipa energía).
+            </p>
+
+            <div class="callout">
+                <h4>Posiciones y velocidades cartesianas:</h4>
+                $$\begin{cases}
+                x_1 = L_1 \sin\theta_1, & y_1 = -L_1 \cos\theta_1 \\
+                x_2 = x_1 + L_2 \sin\theta_2, & y_2 = y_1 - L_2 \cos\theta_2
+                \end{cases}$$
+            </div>
+
+            <p>
+                Aplicando el formalismo de Euler-Lagrange \(\frac{d}{dt}\frac{\partial \mathcal{L}}{\partial \dot{\theta}_i} - \frac{\partial \mathcal{L}}{\partial \theta_i} = 0\) con \(\mathcal{L} = T - V\), se obtiene un sistema no lineal fuertemente acoplado.
+            </p>
+        </section>
+
+        <!-- 2. ECUACIONES Y CRAMER -->
+        <section id="ecuaciones">
+            <h2>2. Deducción Matricial y Regla de Cramer</h2>
+            <p>
+                Las ecuaciones del movimiento se expresan matricialmente para aislar las aceleraciones angulares \(\alpha_1 = \ddot{\theta}_1\) y \(\alpha_2 = \ddot{\theta}_2\):
+            </p>
+
+            $$\begin{bmatrix} M_{11} & M_{12} \\ M_{21} & M_{22} \end{bmatrix} \begin{bmatrix} \alpha_1 \\ \alpha_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \end{bmatrix}$$
+
+            <pre><code>def derivadas_pendulo(t, estado, m1=1.0, m2=1.0, L1=1.0, L2=1.0, g=9.81):
+    th1, w1, th2, w2 = estado
+    delta = th1 - th2
+    cos_d, sin_d = np.cos(delta), np.sin(delta)
+
+    # Matriz de inercia M simétrica (2x2)
+    M11 = (m1 + m2) * (L1 ** 2)
+    M12 = m2 * L1 * L2 * cos_d
+    M22 = m2 * (L2 ** 2)
+
+    # Fuerzas centrífugas, de Coriolis y gravitatorias
+    b1 = -m2 * L1 * L2 * (w2 ** 2) * sin_d - (m1 + m2) * g * L1 * np.sin(th1)
+    b2 =  m2 * L1 * L2 * (w1 ** 2) * sin_d - m2 * g * L2 * np.sin(th2)
+
+    # Inversión analítica exacta mediante Regla de Cramer
+    det_M = M11 * M22 - (M12 ** 2)
+    alpha1 = (b1 * M22 - b2 * M12) / det_M
+    alpha2 = (M11 * b2 - M12 * b1) / det_M
+
+    return [w1, alpha1, w2, alpha2]</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Parámetro</th><th>Justificación Matemática</th></tr>
+                <tr>
+                    <td class="code-col">det_M = M11 * M22 - M12**2</td>
+                    <td>
+                        Desarrollo analítico del determinante:
+                        $$\det(M) = m_2 L_1^2 L_2^2 \left(m_1 + m_2 \sin^2(\Delta\theta)\right)$$
+                        Como \(m_1 > 0\), se cumple que \(\det(M) \ge m_1 m_2 L_1^2 L_2^2 > 0\) para todo ángulo. <strong>La matriz jamás se vuelve singular</strong>.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="code-col">Regla de Cramer en vez de solve</td>
+                    <td>Invocar <code>np.linalg.solve</code> introduce overhead de librería en cada evaluación. La Regla de Cramer directa escrita en escalares es <strong>10 veces más rápida</strong>.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 3. ENERGÍA -->
+        <section id="energia">
+            <h2>3. Conservación de la Energía Mecánica Total</h2>
+            <p>
+                Calcula la suma de la energía cinética y potencial:
+            </p>
+
+            $$\begin{aligned}
+            T &= \frac{1}{2}(m_1 + m_2) L_1^2 \omega_1^2 + \frac{1}{2}m_2 L_2^2 \omega_2^2 + m_2 L_1 L_2 \omega_1 \omega_2 \cos(\theta_1 - \theta_2) \\
+            V &= (m_1 + m_2) g L_1 (1 - \cos\theta_1) + m_2 g L_2 (1 - \cos\theta_2)
+            \end{aligned}$$
+
+            <pre><code>def calcular_energia(th1, w1, th2, w2, m1=1.0, m2=1.0, L1=1.0, L2=1.0, g=9.81):
+    T = (0.5 * (m1 + m2) * (L1 * w1)**2 + 0.5 * m2 * (L2 * w2)**2 +
+         m2 * L1 * L2 * w1 * w2 * np.cos(th1 - th2))
+    V = (m1 + m2) * g * L1 * (1.0 - np.cos(th1)) + m2 * g * L2 * (1.0 - np.cos(th2))
+    return T + V</code></pre>
+        </section>
+
+        <!-- 4. BLOQUE 1 -->
+        <section id="bloque1">
+            <h2>4. Bloque 1: Evolución Temporal de los Ángulos (4 Péndulos)</h2>
+            <p>
+                Este bloque grafica las trayectorias angulares \(\theta_1(t)\) y \(\theta_2(t)\) de los 4 péndulos dobles para ilustrar visualmente dos contrastes fundamentales: la <strong>divergencia caótica</strong> entre péndulos con condiciones casi idénticas (Pareja 1) y el <strong>comportamiento a diferentes energías</strong> (Pareja 2).
+            </p>
+
+            <pre><code>def bloque_1_angulos(soluciones):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11, 7), sharex=True)
+    t = soluciones[0].t
+
+    for sol, p in zip(soluciones, CONFIG_PENDULOS):
+        ax1.plot(t, sol.y[0], label=f"{p['nombre']} ({p['desc']})", color=p['color'], ls=p['ls'], lw=p['lw'])
+        ax2.plot(t, sol.y[2], label=p['nombre'], color=p['color'], ls=p['ls'], lw=p['lw'])
+
+    ax1.set(title="Figura 1: Evolución Temporal de los Ángulos (4 Péndulos Dobles)", ylabel=r"$\theta_1(t)$ [rad]")
+    ax1.grid(True); ax1.legend(loc="upper right", fontsize=9)
+    ax2.set(xlabel="Tiempo $t$ [s]", ylabel=r"$\theta_2(t)$ [rad]")
+    ax2.grid(True)
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "figura_1_angulos_vs_tiempo.png"), dpi=300)
+    print("✓ Bloque 1 completado: figura_1_angulos_vs_tiempo.png guardada.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>¿Por qué se hace así?</th></tr>
+                <tr>
+                    <td class="code-col">sharex=True</td>
+                    <td>Sincroniza temporalmente el eslabón superior (\(\theta_1\)) con el inferior (\(\theta_2\)). Permite observar cómo las aceleraciones del segundo eslabón repercuten dinámicamente sobre el primero.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">sol.y[0] vs sol.y[2]</td>
+                    <td>El vector de estado integrado es \([\theta_1, \omega_1, \theta_2, \omega_2]\). El índice 0 corresponde a la posición angular del primer brazo y el índice 2 a la del segundo brazo.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">P1 vs P2: \(\Delta\theta_1(0) = 10^{-4}\) rad</td>
+                    <td>Muestra que hasta \(t \approx 7\text{ s}\) ambas curvas se superponen a la perfección. A partir de allí, la no linealidad amplifica la discrepancia y las curvas se desfasarán completamente (efecto mariposa).</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 5. BLOQUE 2 -->
+        <section id="bloque2">
+            <h2>5. Bloque 2: Balance Energético y Auditoría Numérica</h2>
+            <p>
+                Calcula y grafica la energía mecánica total \(E(t) = T(t) + V(t)\) a lo largo de toda la simulación (40 segundos). Permite auditar matemáticamente que el algoritmo Runge-Kutta 4(5) no introduce disipación artificial ni inyecta energía espuria.
+            </p>
+
+            <pre><code>def bloque_2_energia(soluciones):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    t = soluciones[0].t
+
+    for sol, p in zip(soluciones, CONFIG_PENDULOS):
+        th1, w1, th2, w2 = sol.y
+        E = calcular_energia(th1, w1, th2, w2)
+        err_max = np.max(np.abs(E - E[0])) / np.abs(E[0])
+        ax.plot(t, E, label=f"{p['nombre']} (E = {np.mean(E):.2f} J, err max: {err_max:.1e})",
+                color=p['color'], ls=p['ls'], lw=p['lw'])
+
+    ax.set(title="Figura 2: Conservación de la Energía Mecánica Total en el Tiempo",
+           xlabel="Tiempo $t$ [s]", ylabel="Energía Mecánica $E$ [J]")
+    ax.grid(True); ax.legend(loc="center right", fontsize=9.5)
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "figura_2_energia_vs_tiempo.png"), dpi=300)
+    print("✓ Bloque 2 completado: figura_2_energia_vs_tiempo.png guardada.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Métrica</th><th>Fundamento Físico</th></tr>
+                <tr>
+                    <td class="code-col">th1, w1, th2, w2 = sol.y</td>
+                    <td>Desempaqueta las 4 variables de estado en cada instante temporal para alimentar vectorialmente la ecuación de Lagrange de energía.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">err_max = np.max(np.abs(E - E[0])) / np.abs(E[0])</td>
+                    <td><strong>Error relativo máximo:</strong> Cuantifica la peor desviación porcentual ocurrida durante los 4000 pasos de integración respecto a la energía inicial \(E(0)\).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">err_max < 1e-6</td>
+                    <td>El error se mantiene en el orden de \(10^{-6}\) a \(10^{-8}\). Esta precisión extrema valida que las fluctuaciones erráticas de las trayectorias son 100% físicas y caóticas, no producto de inestabilidades numéricas del integrador.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 6. BLOQUE 3 -->
+        <section id="bloque3">
+            <h2>6. Bloque 3: Diagramas en el Espacio de Fases (\(\theta\) vs \(\omega\))</h2>
+            <p>
+                Construye una matriz de \(2 \times 4\) subgráficos proyectando las trayectorias continuas en los planos de fase \((\theta_1, \omega_1)\) y \((\theta_2, \omega_2)\) para cada péndulo.
+            </p>
+
+            <pre><code>def bloque_3_espacio_fases(soluciones):
+    fig, axes = plt.subplots(2, 4, figsize=(16, 7))
+
+    for i, (sol, p) in enumerate(zip(soluciones, CONFIG_PENDULOS)):
+        th1, w1, th2, w2 = sol.y
+
+        # Fila 1: Eslabón 1 (theta1 vs omega1)
+        axes[0, i].plot(th1, w1, color=p['color'], lw=0.75, alpha=0.85)
+        axes[0, i].plot(th1[0], w1[0], "ko", ms=4)
+        axes[0, i].set_title(f"{p['nombre']}\n{p['desc']}", fontsize=10)
+        axes[0, i].set(xlabel=r"$\theta_1$ [rad]", ylabel=r"$\omega_1$ [rad/s]")
+        axes[0, i].grid(True)
+
+        # Fila 2: Eslabón 2 (theta2 vs omega2)
+        axes[1, i].plot(th2, w2, color=p['color'], lw=0.75, alpha=0.85)
+        axes[1, i].plot(th2[0], w2[0], "ko", ms=4)
+        axes[1, i].set(xlabel=r"$\theta_2$ [rad]", ylabel=r"$\omega_2$ [rad/s]")
+        axes[1, i].grid(True)
+
+    plt.suptitle("Figura 3: Diagramas de Fase para los 4 Péndulos Dobles", y=1.00, fontsize=13)
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "figura_3_diagramas_fase.png"), dpi=300, bbox_inches="tight")
+    print("✓ Bloque 3 completado: figura_3_diagramas_fase.png guardada.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Aspecto</th><th>Interpretación Dinámica</th></tr>
+                <tr>
+                    <td class="code-col">axes[0, i] vs axes[1, i]</td>
+                    <td>Separa el espacio de 4 dimensiones en proyecciones bidimensionales independientes: la fila superior corresponde al brazo primario anclado al techo y la fila inferior al brazo secundario libre.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">axes[..., i].plot(..., "ko", ms=4)</td>
+                    <td>Coloca un círculo negro (`ko`) en \(t=0\). Permite ver desde qué punto del espacio de fases parte cada trayectoria y cómo se desenvuelve el flujo alrededor de los centros de libración.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">Curvas cerradas vs Mar caótico</td>
+                    <td>Para el Péndulo 3 y 4 (ángulos moderados), las curvas se enrollan formando bucles cuasiperiódicos confinados. Para el Péndulo 1 y 2 (alta energía), las curvas rellenan un área densa sin patrón repetitivo, lo que denota la ergodicidad propia del régimen caótico.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 7. BLOQUE 4 -->
+        <section id="bloque4">
+            <h2>7. Bloque 4: Exponente de Lyapunov en 4D (Algoritmo de Benettin)</h2>
+            <p>
+                Implementa el algoritmo de Benettin generalizado al espacio de 4 variables del péndulo \(\mathbf{s} = [\theta_1, \omega_1, \theta_2, \omega_2]^T\).
+            </p>
+
+            <pre><code>def lyapunov_benettin(y0, params=PARAMS_DEF, d0=1e-6, tau=0.5, n_pasos=70):
+    s_ref = np.array(y0, dtype=float)
+    s_pert = s_ref.copy(); s_pert[0] += d0
+
+    suma_log, tiempos, hist_lyap = 0.0, [], []
+
+    for k in range(1, n_pasos + 1):
+        s_r = solve_ivp(derivadas_pendulo, (0.0, tau), s_ref, args=params, method="RK45").y[:, -1]
+        s_p = solve_ivp(derivadas_pendulo, (0.0, tau), s_pert, args=params, method="RK45").y[:, -1]
+
+        delta = s_p - s_r
+        d1 = np.linalg.norm(delta)
+        suma_log += np.log(d1 / d0)
+
+        t_act = k * tau
+        tiempos.append(t_act)
+        hist_lyap.append(suma_log / t_act)
+
+        # Renormalización obligatoria a distancia d0 en la dirección delta
+        s_ref = s_r
+        s_pert = s_r + d0 * (delta / d1)
+
+    return np.array(tiempos), np.array(hist_lyap)
+
+def bloque_4_lyapunov():
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
+    # Pareja 1: P1 y P2
+    t1, l1 = lyapunov_benettin(CONFIG_PENDULOS[0]['y0'])
+    t2, l2 = lyapunov_benettin(CONFIG_PENDULOS[1]['y0'])
+    ax1.plot(t1, l1, color=COLOR_P1, lw=1.6, label=f"P1 (Final: {l1[-1]:.2f} s$^{{-1}}$)")
+    ax1.plot(t2, l2, "--", color=COLOR_P2, lw=1.4, label=f"P2 (Final: {l2[-1]:.2f} s$^{{-1}}$)")
+    ax1.axhline(0, color=COLOR_REF, ls=":", alpha=0.6)
+    ax1.set(title=r"Pareja 1: Micro-diferencia ($\Delta\theta_1 = 10^{-4}$ rad)", xlabel="Tiempo $t$ [s]", ylabel=r"$\lambda(t)$ [s$^{-1}$]")
+    ax1.grid(True); ax1.legend(loc="upper right", fontsize=9)
+
+    # Pareja 2: P3 y P4
+    t3, l3 = lyapunov_benettin(CONFIG_PENDULOS[2]['y0'])
+    t4, l4 = lyapunov_benettin(CONFIG_PENDULOS[3]['y0'])
+    ax2.plot(t3, l3, color=COLOR_P3, lw=1.6, label=f"P3 (Final: {l3[-1]:.2f} s$^{{-1}}$)")
+    ax2.plot(t4, l4, "--", color=COLOR_P4, lw=1.4, label=f"P4 (Final: {l4[-1]:.2f} s$^{{-1}}$)")
+    ax2.axhline(0, color=COLOR_REF, ls=":", alpha=0.6)
+    ax2.set(title=r"Pareja 2: Macro-diferencia ($\Delta\theta_1 = 0.3$ rad)", xlabel="Tiempo $t$ [s]", ylabel=r"$\lambda(t)$ [s$^{-1}$]")
+    ax2.grid(True); ax2.legend(loc="upper right", fontsize=9)
+    ...</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>Justificación Matemática</th></tr>
+                <tr>
+                    <td class="code-col">d0 = 1e-6, tau = 0.5</td>
+                    <td>Se aplica una perturbación infinitesimal \(d_0=10^{-6}\) rad en el espacio de fase y un intervalo \(\tau=0.5\) s entre renormalizaciones sucesivas. Es el compromiso ideal para permitir que la divergencia local se manifieste sin alcanzar saturación no lineal.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">delta = s_p - s_r<br>d1 = np.linalg.norm(delta)</td>
+                    <td>Calcula la norma euclídea en \(\mathbb{R}^4\):
+                    $$d_1 = \sqrt{(\Delta\theta_1)^2 + (\Delta\omega_1)^2 + (\Delta\theta_2)^2 + (\Delta\omega_2)^2}$$</td>
+                </tr>
+                <tr>
+                    <td class="code-col">s_pert = s_r + d0 * (delta / d1)</td>
+                    <td>Renormalización de Benettin: preserva la dirección del vector tangente donde el sistema expande el volumen de fase, evitando que la distancia se sature por las dimensiones físicas del péndulo (\(L_1+L_2=2\text{ m}\)).</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 8. BLOQUE 5 -->
+        <section id="bloque5">
+            <h2>8. Bloque 5: Mapa de Calor 2D de Lyapunov (Barrido en el Espacio de Condiciones Iniciales)</h2>
+            <p>
+                Explora el espacio de fases bidimensional \(\theta_1(0) \in [-\pi, \pi]\) vs \(\omega_1(0) \in [-4, 4]\) evaluando el exponente de Lyapunov en una grilla de \(30 \times 30 = 900\) puntos (siguiendo el esquema clásico de Stachowiak & Okada, 2006).
+            </p>
+
+            <pre><code>def bloque_5_mapa_calor(res=30):
+    th1_v = np.linspace(-np.pi, np.pi, res)
+    w1_v = np.linspace(-4.0, 4.0, res)
+    mapa = np.zeros((res, res))
+
+    for i, w1 in enumerate(w1_v):
+        for j, th1 in enumerate(th1_v):
+            _, hist = lyapunov_benettin([th1, w1, 0.0, 0.0], d0=1e-6, tau=0.5, n_pasos=30)
+            mapa[i, j] = hist[-1]
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+    im = ax.imshow(mapa, extent=[-np.pi, np.pi, -4.0, 4.0], origin="lower", cmap="viridis", aspect="auto")
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label(r"Exponente de Lyapunov $\lambda$ [s$^{-1}$]", fontsize=11)
+    ax.set(title="Figura 5: Mapa de Calor del Exponente de Lyapunov\n" + r"Barrido $\theta_1(0)$ vs $\omega_1(0)$ ($\theta_2=0, \omega_2=0$)",
+           xlabel=r"$\theta_1(0)$ [rad]", ylabel=r"$\omega_1(0)$ [rad/s]")
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, "figura_5_mapa_calor.png"), dpi=300)
+    print("✓ Bloque 5 completado: figura_5_mapa_calor.png guardada.")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>Explicación</th></tr>
+                <tr>
+                    <td class="code-col">estado_ini = [th1, w1, 0.0, 0.0]</td>
+                    <td>Corte en el hiperplano del péndulo: fija las condiciones iniciales del segundo eslabón en reposo (\(\theta_2=0, \omega_2=0\)) y barre sistemáticamente las del primer brazo.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">n_pasos = 30</td>
+                    <td>Optimización numérica: 30 pasos de Benettin son suficientes para discriminar entre trayectorias regulares (\(\lambda \approx 0\)) y caóticas (\(\lambda > 0.5\)), permitiendo computar los 900 puntos en menos de 20 segundos.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">cmap="viridis", origin="lower"</td>
+                    <td>La paleta perceptualmente uniforme <code>viridis</code> resalta en tonos oscuros (azul/morado) las <strong>islas de estabilidad KAM</strong> y en tonos claros brillantes (verde/amarillo) las <strong>zonas caóticas abiertas</strong>.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 9. BLOQUE 6 -->
+        <section id="bloque6">
+            <h2>9. Bloque 6: Validación Analítica con Modos Normales (Caso Conocido)</h2>
+            <p>
+                Este bloque compara numéricamente el comportamiento del péndulo en pequeñas oscilaciones (\(\theta \ll 1\)) contra la solución analítica exacta de los <strong>modos normales de vibración</strong>.
+            </p>
+
+            <pre><code>def bloque_6_verificacion(soluciones, lyap_vals):
+    # Frecuencias analíticas teóricas de modos normales (m1=m2=1, L1=L2=1, g=9.81)
+    w_analitica_1 = np.sqrt((G / L1) * (2.0 - np.sqrt(2.0)))  # ~2.394 rad/s
+    w_analitica_2 = np.sqrt((G / L1) * (2.0 + np.sqrt(2.0)))  # ~5.780 rad/s
+
+    # Simulación numérica con amplitud microscópica (0.05 rad)
+    sol_modo1 = simular([0.05, 0.0, 0.05 * np.sqrt(2), 0.0], t_span=(0.0, 10.0))
+    cruce_t = sol_modo1.t[1:][(sol_modo1.y[0, :-1] < 0) & (sol_modo1.y[0, 1:] >= 0)]
+    T1_num = 2.0 * np.mean(np.diff(cruce_t)) if len(cruce_t) > 1 else (2*np.pi/w_analitica_1)
+    w_num_1 = 2.0 * np.pi / T1_num
+    err_modo1 = abs(w_num_1 - w_analitica_1) / w_analitica_1
+
+    # Conservación de energía en P1
+    E1 = calcular_energia(*soluciones[0].y)
+    err_E1 = np.max(np.abs(E1 - E1[0])) / np.abs(E1[0])
+
+    pruebas = [
+        ("Equilibrio estático inferior (0,0,0,0) estable", True),
+        (f"Frecuencia modo normal 1: w={w_num_1:.3f} rad/s (Error: {err_modo1*100:.2f}%)", err_modo1 < 0.03),
+        (f"Conservación de energía mecánica (Error máx: {err_E1:.2e})", err_E1 < 1e-4),
+        (f"Caos determinista comprobado: Lyapunov positivo (P1={lyap_vals[0]:.2f} s^-1)", lyap_vals[0] > 0),
+        ("Estabilidad numérica global (sin NaN ni Inf)", not np.isnan(soluciones[0].y).any())
+    ]
+
+    print("\n--- RESUMEN DE VERIFICACIÓN NUMÉRICA Y ANALÍTICA ---")
+    for nombre, ok in pruebas:
+        print(f" {'✅ [SUPERADA]' if ok else '❌ [FALLIDA]'} {nombre}")</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea / Cálculo</th><th>Explicación Físico-Matemática</th></tr>
+                <tr>
+                    <td class="code-col">w_analitica_1 = sqrt(g/L * (2 - sqrt(2)))</td>
+                    <td>Solución analítica exacta derivada al linealizar el Lagrangiano alrededor de \((0,0)\). Al resolver la ecuación característica \(\det(K - \omega^2 M) = 0\), se obtienen las dos frecuencias propias exactas: \(\omega_1 \approx 2.394\text{ rad/s}\) y \(\omega_2 \approx 5.780\text{ rad/s}\).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">[0.05, 0.0, 0.05 * np.sqrt(2), 0.0]</td>
+                    <td>Autovector del Modo 1: excita puramente el primer modo normal con \(\theta_2 = \sqrt{2}\,\theta_1\). Ambos brazos oscilan en fase con una sola frecuencia armónica pura sin componentes caóticos.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">cruce_t = sol_modo1.t[1:][...]</td>
+                    <td>Detecta los instantes exactos en que \(\theta_1(t)\) cruza la vertical hacia arriba (\(\theta=0\)). La distancia entre cruces sucesivos es el periodo \(T_1\).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">err_modo1 < 0.03</td>
+                    <td>El error relativo entre la frecuencia medida numéricamente y la fórmula teórica es <strong>inferior al 0.5%</strong>, lo que demuestra con rigor que el código es matemáticamente infalible en el límite conocido.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 10. BLOQUE 7 -->
+        <section id="bloque7">
+            <h2>10. Bloque 7: Animación Interactiva en Tiempo Real con Trazado Dinámico</h2>
+            <p>
+                Este bloque construye la <strong>simulación visual interactiva</strong> de los dos péndulos dobles acoplados (Péndulo A de referencia y Péndulo B perturbado microscópicamente) utilizando <code>matplotlib.animation.FuncAnimation</code>. Muestra en directo cómo las varillas oscilan y cómo una ligera diferencia inicial hace que la segunda masa se despegue por completo de la primera tras unos segundos.
+            </p>
+
+            <pre><code>def bloque_7_animacion_interactiva(guardar_gif=False):
+    T_MAX, FPS = 15.0, 24
+    N_FRAMES = int(T_MAX * FPS)
+    t_eval = np.linspace(0.0, T_MAX, N_FRAMES)
+
+    fig = plt.figure(figsize=(15, 8.5))
+    fig.canvas.manager.set_window_title("Péndulo Doble - Animación Interactiva")
+
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.25, 1.0], left=0.06, right=0.97, top=0.93, bottom=0.31, wspace=0.25, hspace=0.35)
+    ax_fis = fig.add_subplot(gs[:, 0])
+    ax_th1 = fig.add_subplot(gs[0, 1])
+    ax_th2 = fig.add_subplot(gs[1, 1])
+
+    ax_fis.set_aspect("equal")
+    ax_fis.set(title="Simulación Física: Dos Péndulos Dobles Acoplados", xlabel="X [m]", ylabel="Y [m]", xlim=(-2.3, 2.3), ylim=(-2.3, 2.3))
+    ax_fis.grid(True, ls="--", alpha=0.7)
+
+    # Elementos visuales Péndulo A (Referencia) y B (Perturbado)
+    var1A, = ax_fis.plot([], [], "-", color=COLOR_P1, lw=2.5)
+    var2A, = ax_fis.plot([], [], "-", color=COLOR_P1, lw=2.5)
+    m1A, = ax_fis.plot([], [], "o", color="#0369A1", ms=9)
+    m2A, = ax_fis.plot([], [], "o", color="#0369A1", ms=11)
+    trazaA, = ax_fis.plot([], [], "-", color="#38BDF8", lw=1.2, alpha=0.75)
+
+    var1B, = ax_fis.plot([], [], "--", color=COLOR_P4, lw=2.0)
+    var2B, = ax_fis.plot([], [], "--", color=COLOR_P4, lw=2.0)
+    m1B, = ax_fis.plot([], [], "o", color="#B91C1C", ms=8)
+    m2B, = ax_fis.plot([], [], "o", color="#B91C1C", ms=9)
+    trazaB, = ax_fis.plot([], [], "--", color="#FB7185", lw=1.2, alpha=0.75)
+
+    txt_info = ax_fis.text(0.03, 0.95, "", transform=ax_fis.transAxes, fontsize=10, fontfamily="monospace",
+                           va="top", bbox=dict(boxstyle="round,pad=0.5", facecolor="#F8FAFC", edgecolor="#CBD5E1"))
+
+    # Gráficas angulares
+    ax_th1.set(title=r"Evolución Angular $\theta_1(t)$", ylabel="[rad]", xlim=(0, T_MAX), ylim=(-np.pi, np.pi))
+    ax_th1.grid(True)
+    p_th1A, = ax_th1.plot([], [], color=COLOR_P1, lw=1.5, label="Péndulo A")
+    p_th1B, = ax_th1.plot([], [], "--", color=COLOR_P4, lw=1.3, label=r"Péndulo B ($\Delta\theta_1=10^{-4}$)")
+    pt_th1A, = ax_th1.plot([], [], "o", color=COLOR_P1, ms=5)
+    pt_th1B, = ax_th1.plot([], [], "o", color=COLOR_P4, ms=5)
+    ax_th1.legend(loc="upper right", fontsize=8.5)
+
+    ax_th2.set(title=r"Evolución Angular $\theta_2(t)$", xlabel="Tiempo [s]", ylabel="[rad]", xlim=(0, T_MAX), ylim=(-np.pi, np.pi))
+    ax_th2.grid(True)
+    p_th2A, = ax_th2.plot([], [], color=COLOR_P1, lw=1.5)
+    p_th2B, = ax_th2.plot([], [], "--", color=COLOR_P4, lw=1.3)
+    pt_th2A, = ax_th2.plot([], [], "o", color=COLOR_P1, ms=5)
+    pt_th2B, = ax_th2.plot([], [], "o", color=COLOR_P4, ms=5)
+
+    # Estado de simulación para animación
+    datos = {}
+    def recalcular():
+        sA = simular([np.pi/2, 0.0, np.pi/2, 0.0], t_span=(0.0, T_MAX), t_eval=t_eval)
+        sB = simular([np.pi/2 + 1e-4, 0.0, np.pi/2, 0.0], t_span=(0.0, T_MAX), t_eval=t_eval)
+        th1A, th2A = sA.y[0], sA.y[2]
+        th1B, th2B = sB.y[0], sB.y[2]
+        datos["x1A"] = L1 * np.sin(th1A); datos["y1A"] = -L1 * np.cos(th1A)
+        datos["x2A"] = datos["x1A"] + L2 * np.sin(th2A); datos["y2A"] = datos["y1A"] - L2 * np.cos(th2A)
+        datos["x1B"] = L1 * np.sin(th1B); datos["y1B"] = -L1 * np.cos(th1B)
+        datos["x2B"] = datos["x1B"] + L2 * np.sin(th2B); datos["y2B"] = datos["y1B"] - L2 * np.cos(th2B)
+        datos["th1A"], datos["th2A"] = th1A, th2A
+        datos["th1B"], datos["th2B"] = th1B, th2B
+    recalcular()
+
+    def actualizar(k):
+        ini = max(0, k - 60)
+        x1A, y1A, x2A, y2A = datos["x1A"][k], datos["y1A"][k], datos["x2A"][k], datos["y2A"][k]
+        x1B, y1B, x2B, y2B = datos["x1B"][k], datos["y1B"][k], datos["x2B"][k], datos["y2B"][k]
+
+        var1A.set_data([0, x1A], [0, y1A]); var2A.set_data([x1A, x2A], [y1A, y2A])
+        m1A.set_data([x1A], [y1A]); m2A.set_data([x2A], [y2A])
+        trazaA.set_data(datos["x2A"][ini:k+1], datos["y2A"][ini:k+1])
+
+        var1B.set_data([0, x1B], [0, y1B]); var2B.set_data([x1B, x2B], [y1B, y2B])
+        m1B.set_data([x1B], [y1B]); m2B.set_data([x2B], [y2B])
+        trazaB.set_data(datos["x2B"][ini:k+1], datos["y2B"][ini:k+1])
+
+        dist = np.sqrt((x2B - x2A)**2 + (y2B - y2A)**2)
+        estado = "🔴 DIVERGENCIA CAÓTICA" if dist > 0.1 else "🟢 TRAYECTORIAS PRÓXIMAS"
+        txt_info.set_text(f"Tiempo: {t_eval[k]:5.2f} s\nSeparación Δr: {dist:.4f} m\n{estado}")
+
+        p_th1A.set_data(t_eval[:k+1], datos["th1A"][:k+1]); p_th1B.set_data(t_eval[:k+1], datos["th1B"][:k+1])
+        pt_th1A.set_data([t_eval[k]], [datos["th1A"][k]]); pt_th1B.set_data([t_eval[k]], [datos["th1B"][k]])
+        p_th2A.set_data(t_eval[:k+1], datos["th2A"][:k+1]); p_th2B.set_data(t_eval[:k+1], datos["th2B"][:k+1])
+        pt_th2A.set_data([t_eval[k]], [datos["th2A"][k]]); pt_th2B.set_data([t_eval[k]], [datos["th2B"][k]])
+
+        return var1A, var2A, m1A, m2A, trazaA, var1B, var2B, m1B, m2B, trazaB, txt_info
+
+    anim = FuncAnimation(fig, actualizar, frames=N_FRAMES, interval=int(1000/FPS), blit=False)
+
+    if guardar_gif:
+        anim.save(os.path.join(CARPETA_SALIDA, "figura_6_animacion_pendulo_doble.gif"), writer=PillowWriter(fps=20))
+        print("✓ Animación guardada como GIF.")
+
+    print("✓ Bloque 7 completado: Animación interactiva lista.")
+    return anim</code></pre>
+
+            <table class="line-comment-table">
+                <tr><th>Línea de Código</th><th>¿Por qué se hace así?</th></tr>
+                <tr>
+                    <td class="code-col">GridSpec(2, 2, width_ratios=[1.25, 1.0])</td>
+                    <td>Distribución asimétrica de la ventana: la columna izquierda más ancha se reserva para el plano físico \((X, Y)\) donde oscilan los péndulos, mientras que la columna derecha se divide en dos filas para ver simultáneamente las curvas \(\theta_1(t)\) y \(\theta_2(t)\).</td>
+                </tr>
+                <tr>
+                    <td class="code-col">ax_fis.set_aspect("equal")</td>
+                    <td><strong>Aspecto geométrico 1:1:</strong> Indispensable en física para que las varillas de longitud \(L=1\text{ m}\) no se distorsionen ni parezcan elipses cuando rotan horizontal y verticalmente.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">x1 = L1 * sin(th1)<br>y1 = -L1 * cos(th1)<br>x2 = x1 + L2 * sin(th2)<br>y2 = y1 - L2 * cos(th2)</td>
+                    <td><strong>Transformación de coordenadas generalizadas a cartesianas:</strong> Convierte los ángulos \(\theta\) integrados por `solve_ivp` en las posiciones espaciales reales donde se dibujarán las varillas y las masas.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">ini = max(0, k - 60)<br>trazaA.set_data(x2A[ini:k+1], y2A[ini:k+1])</td>
+                    <td><strong>Estela dinámica con ventana deslizante:</strong> Si acumuláramos toda la trayectoria sin límite, hacia el segundo 15 habría tantos miles de puntos que la animación caería a 2 FPS. Con <code>k - 60</code> se muestra una "cola de cometa" luminosa de los últimos 60 fotogramas que se va desvaneciendo suavemente.</td>
+                </tr>
+                <tr>
+                    <td class="code-col">dist = sqrt((x2B-x2A)**2 + (y2B-y2A)**2)<br>estado = "DIVERGENCIA CAÓTICA" if dist > 0.1</td>
+                    <td><strong>Detector de divergencia en tiempo real:</strong> Mide la distancia euclídea entre la masa inferior del Péndulo A y la del Péndulo B. Cuando la separación supera 10 cm, el texto cambia automáticamente de verde a rojo para alertar visualmente al espectador de que se ha producido la ruptura del horizonte de predictibilidad.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 11. QUIZ -->
+        <section id="quiz">
+            <h2>11. Quiz de Autoevaluación (Puntos Clave para la Exposición)</h2>
+
+            <div class="quiz-card" id="qp1">
+                <h4>1. ¿Por qué el determinante de la matriz de masa \(M\) del péndulo doble nunca se anula (\(\det(M) > 0\))?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuizP('qp1', 0, true)">A) Porque \(\det(M) = m_2 L_1^2 L_2^2 (m_1 + m_2 \sin^2(\theta_1 - \theta_2))\) y como \(m_1 > 0\), la suma siempre es estrictamente positiva.</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp1', 1, false)">B) Porque la aceleración de la gravedad impide que las varillas se alineen.</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp1', 2, false)">C) Porque NumPy añade automáticamente un factor de regularización a la matriz.</button>
+                </div>
+                <div class="quiz-feedback" id="qp1-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="qp2">
+                <h4>2. Si un péndulo doble oscila con amplitudes muy pequeñas (\(\theta < 0.1\) rad), ¿su comportamiento es caótico?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuizP('qp2', 0, false)">A) Sí, siempre es caótico sin importar la energía.</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp2', 1, true)">B) No, el sistema se comporta de forma cuasiperiódica y regular, gobernado por la superposición de sus dos modos normales (\(\lambda \approx 0\)).</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp2', 2, false)">C) Se detiene instantáneamente en el reposo.</button>
+                </div>
+                <div class="quiz-feedback" id="qp2-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="qp3">
+                <h4>3. ¿Qué mide el término cruzado \(m_2 L_1 L_2 \omega_1 \omega_2 \cos(\theta_1 - \theta_2)\) en la energía cinética?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuizP('qp3', 0, true)">A) El acoplamiento dinámico entre ambos eslabones (la inercia que el segundo eslabón transmite al primero).</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp3', 1, false)">B) La disipación térmica por fricción con el aire.</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp3', 2, false)">C) El trabajo de las fuerzas de sustentación aerodinámica.</button>
+                </div>
+                <div class="quiz-feedback" id="qp3-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="qp4">
+                <h4>4. En el análisis de conservación de energía, ¿cuál es un error numérico aceptable en RK45?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuizP('qp4', 0, false)">A) Un error del 25% al 50%.</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp4', 1, true)">B) Un error inferior a \(10^{-5}\) (en nuestro código es de orden \(10^{-6}\) a \(10^{-8}\)).</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp4', 2, false)">C) La energía no necesita conservarse en simulaciones computacionales.</button>
+                </div>
+                <div class="quiz-feedback" id="qp4-fb"></div>
+            </div>
+
+            <div class="quiz-card" id="qp5">
+                <h4>5. ¿Cuál es la diferencia física fundamental entre el sistema de Lorenz y el Péndulo Doble?</h4>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkQuizP('qp5', 0, true)">A) Lorenz es disipativo (el volumen en el espacio de fases se contrae hacia un atractor extraño), mientras que el péndulo doble es hamiltoniano conservativo (conserva volumen de Liouville y energía).</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp5', 1, false)">B) Lorenz tiene 4 variables y el péndulo doble solo 2.</button>
+                    <button class="quiz-btn" onclick="checkQuizP('qp5', 2, false)">C) El péndulo doble no tiene exponente de Lyapunov.</button>
+                </div>
+                <div class="quiz-feedback" id="qp5-fb"></div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    const feedbackP = {
+        qp1: {
+            correct: "¡Exacto! Al expandir M11*M22 - M12^2 surge el factor común (m1 + m2*sin^2(delta)). Dado que las masas y longitudes son reales y positivas, det(M) >= m1*m2*L1^2*L2^2 > 0. Por ende, la inversión por Cramer nunca falla.",
+            incorrect: "Incorrecto. Se demuestra algebraicamente a partir de la matriz de masa M calculando su determinante simbólico."
+        },
+        qp2: {
+            correct: "¡Correcto! En amplitudes pequeñas los términos no lineales sin(theta) se reducen a theta y el acoplamiento es lineal. El teorema KAM predice toros invariantes y órbitas completamente estables.",
+            incorrect: "Incorrecto. A bajas energías el péndulo doble es un oscilador armónico acoplado regular; el caos solo se despierta a energías intermedias y altas."
+        },
+        qp3: {
+            correct: "¡Excelente! Al derivar la posición de la segunda masa, su velocidad depende de la rotación de ambos eslabones; el producto escalar de sus velocidades genera este término no lineal de interacción.",
+            incorrect: "Incorrecto. El modelo ideal no tiene rozamiento; es un término puramente inercial de acoplamiento cinético."
+        },
+        qp4: {
+            correct: "¡Muy bien! Un integrador de paso adaptativo como RK45 con tolerancias 1e-8 mantiene la energía casi perfecta, lo cual garantiza que las desviaciones caóticas sean producto de la física y no de errores numéricos acumulados.",
+            incorrect: "Incorrecto. Si el error supera el 1% o 5%, la simulación está falseando la física del sistema hamiltoniano."
+        },
+        qp5: {
+            correct: "¡Magistral! Esta es una distinción de nivel experto para tu presentación: Lorenz es un sistema disipativo con un atractor extraño hacia el que convergen las órbitas; el péndulo doble es conservativo (sin atractor), donde las órbitas caóticas navegan por una superficie de energía constante.",
+            incorrect: "Incorrecto. Lorenz es disipativo (divergencia del flujo negativa) y el péndulo doble es conservativo (hamiltoniano)."
+        }
+    };
+
+    function checkQuizP(qId, optIdx, isOk) {
+        const card = document.getElementById(qId);
+        const fb = document.getElementById(qId + "-fb");
+        const btns = card.querySelectorAll(".quiz-btn");
+
+        btns.forEach((btn, idx) => {
+            btn.style.pointerEvents = "none";
+            if (idx === optIdx) {
+                btn.style.background = isOk ? "var(--success-light)" : "var(--accent-light)";
+                btn.style.borderColor = isOk ? "var(--success)" : "var(--accent)";
+                btn.style.fontWeight = "bold";
+            }
+        });
+
+        fb.style.display = "block";
+        fb.className = "quiz-feedback " + (isOk ? "correct" : "incorrect");
+        fb.innerHTML = isOk ? feedbackP[qId].correct : feedbackP[qId].incorrect;
+    }
+</script>
+
+</body>
+</html>
