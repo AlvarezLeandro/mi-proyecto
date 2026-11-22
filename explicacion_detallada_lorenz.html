@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explicación Detallada: Sistema de Lorenz</title>
+<script>
+  // MathJax para renderizar ecuaciones LaTeX
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      packages: {'[+]': ['ams']}
+    },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+  /* =====================================================================
+     TIPOGRAFÍA Y RESET
+  ===================================================================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:          #F8FAFC;
+    --surface:     #FFFFFF;
+    --border:      #E2E8F0;
+    --text:        #0F172A;
+    --text-muted:  #475569;
+    --accent:      #0284C7;
+    --accent-dark: #0369A1;
+    --green:       #059669;
+    --amber:       #D97706;
+    --red:         #E11D48;
+    --code-bg:     #1E293B;
+    --code-text:   #E2E8F0;
+    --note-bg:     #EFF6FF;
+    --note-border: #3B82F6;
+    --warn-bg:     #FFFBEB;
+    --warn-border: #F59E0B;
+    --math-bg:     #F0FDF4;
+    --math-border: #16A34A;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  /* =====================================================================
+     LAYOUT
+  ===================================================================== */
+  .page-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* =====================================================================
+     SIDEBAR / ÍNDICE
+  ===================================================================== */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 2rem 1.5rem;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .sidebar h2 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    font-weight: 700;
+  }
+
+  .sidebar nav ol {
+    list-style: none;
+    counter-reset: toc;
+    padding: 0;
+  }
+
+  .sidebar nav > ol > li {
+    counter-increment: toc;
+    margin-bottom: 0.15rem;
+  }
+
+  .sidebar nav > ol > li > a::before {
+    content: counter(toc) ". ";
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .sidebar a {
+    display: block;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.82rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .sidebar a:hover { background: #EFF6FF; color: var(--accent-dark); }
+
+  .sidebar .sub-items {
+    list-style: none;
+    padding-left: 1rem;
+    margin-top: 0.1rem;
+  }
+
+  .sidebar .sub-items a { font-size: 0.75rem; color: var(--text-muted); }
+  .sidebar .sub-items a::before { content: "– "; }
+
+  /* =====================================================================
+     CONTENIDO PRINCIPAL
+  ===================================================================== */
+  .content {
+    padding: 3rem 4rem 6rem 4rem;
+    max-width: 900px;
+  }
+
+  /* HEADER */
+  .hero {
+    text-align: center;
+    padding: 3.5rem 2rem 3rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 4rem;
+  }
+
+  .hero .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 620px;
+    margin: 0 auto 1.5rem;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .hero .meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* SECCIONES */
+  .section {
+    margin-bottom: 5rem;
+    padding-top: 1rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-num {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif;
+    margin-top: 4px;
+  }
+
+  .section-num.green  { background: var(--green); }
+  .section-num.amber  { background: var(--amber); }
+  .section-num.red    { background: var(--red);   }
+
+  .section h2 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 0.3rem;
+  }
+
+  .section .section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'Inter', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 2.2rem 0 0.9rem;
+    color: var(--text);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1.6rem 0 0.6rem;
+    color: var(--accent-dark);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  p { margin-bottom: 1rem; }
+
+  ul, ol {
+    margin: 0.6rem 0 1rem 1.6rem;
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+
+  /* =====================================================================
+     BLOQUES DE CÓDIGO
+  ===================================================================== */
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+
+  .code-block .code-label {
+    background: #0F172A;
+    color: #94A3B8;
+    font-size: 0.72rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 1.2rem;
+    border-bottom: 1px solid #334155;
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: 1.4rem 1.6rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.84rem;
+    line-height: 1.65;
+    white-space: pre;
+  }
+
+  /* Resaltado de sintaxis mínimo */
+  .kw  { color: #93C5FD; }   /* palabras clave: def, return, for, if … */
+  .fn  { color: #FCD34D; }   /* funciones */
+  .st  { color: #6EE7B7; }   /* strings */
+  .cm  { color: #64748B; font-style: italic; }   /* comentarios */
+  .nb  { color: #F9A8D4; }   /* números */
+  .op  { color: #CBD5E1; }   /* operadores */
+
+  /* =====================================================================
+     CALLOUTS
+  ===================================================================== */
+  .callout {
+    border-left: 4px solid;
+    border-radius: 0 10px 10px 0;
+    padding: 1.1rem 1.4rem;
+    margin: 1.6rem 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.93rem;
+    line-height: 1.65;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.5rem;
+  }
+
+  .note   { background: var(--note-bg);  border-color: var(--note-border); }
+  .note   .callout-title { color: #1D4ED8; }
+
+  .math-box { background: var(--math-bg); border-color: var(--math-border); }
+  .math-box .callout-title { color: #15803D; }
+
+  .warn   { background: var(--warn-bg); border-color: var(--warn-border); }
+  .warn   .callout-title { color: #B45309; }
+
+  .insight {
+    background: #FDF4FF;
+    border-color: #A855F7;
+  }
+  .insight .callout-title { color: #7E22CE; }
+
+  /* =====================================================================
+     ECUACIONES
+  ===================================================================== */
+  .eq-block {
+    background: var(--math-bg);
+    border: 1px solid var(--math-border);
+    border-radius: 10px;
+    padding: 1.4rem 2rem;
+    margin: 1.5rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+
+  /* =====================================================================
+     TABLAS
+  ===================================================================== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.88rem;
+    margin: 1.4rem 0;
+  }
+
+  th {
+    background: var(--accent);
+    color: #fff;
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: #F1F5F9; }
+
+  /* =====================================================================
+     DIAGRAMA FLUJO
+  ===================================================================== */
+  .flow-diagram {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 1.5rem 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.82rem;
+  }
+
+  .flow-box {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .flow-arrow {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  /* =====================================================================
+     VARIABLE TABLE
+  ===================================================================== */
+  .var-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    margin: 1.3rem 0;
+  }
+
+  .var-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.85rem;
+  }
+
+  .var-card code {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    color: var(--accent-dark);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .var-card p { margin: 0; color: var(--text-muted); font-size: 0.82rem; }
+
+  /* =====================================================================
+     SEPARADOR DE SECCIÓN
+  ===================================================================== */
+  .section-divider {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 3.5rem 0;
+  }
+
+  /* =====================================================================
+     INLINE CODE
+  ===================================================================== */
+  code {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.84em;
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+  }
+
+  /* =====================================================================
+     SCROLL-TO-TOP
+  ===================================================================== */
+  .back-top {
+    display: inline-block;
+    margin-top: 2rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .back-top:hover { text-decoration: underline; }
+
+  /* =====================================================================
+     RESPONSIVE
+  ===================================================================== */
+  @media (max-width: 900px) {
+    .page-wrapper { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .content { padding: 2rem 1.5rem 4rem; max-width: 100%; }
+    .var-grid { grid-template-columns: 1fr; }
+  }
+
+  /* =====================================================================
+     QUIZ
+  ===================================================================== */
+  .quiz-section { margin-top: 4rem; }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .quiz-card .q-num {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.5rem;
+  }
+
+  .quiz-card .q-text {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .quiz-card .options { list-style: none; padding: 0; margin: 0; }
+
+  .quiz-card .options li {
+    margin-bottom: 0.5rem;
+  }
+
+  .quiz-card .options button {
+    width: 100%;
+    text-align: left;
+    background: #F8FAFC;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .quiz-card .options button:hover { background: #EFF6FF; border-color: var(--accent); }
+
+  .quiz-card .options button.correct {
+    background: #DCFCE7; border-color: #16A34A; color: #15803D; font-weight: 700;
+  }
+
+  .quiz-card .options button.wrong {
+    background: #FEE2E2; border-color: #DC2626; color: #991B1B;
+  }
+
+  .quiz-feedback {
+    margin-top: 0.8rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.88rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok   { background: #DCFCE7; color: #15803D; }
+  .quiz-feedback.bad  { background: #FEE2E2; color: #991B1B; }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+<aside class="sidebar">
+  <h2>Índice del documento</h2>
+  <nav>
+    <ol>
+      <li><a href="#sec-intro">Introducción general</a></li>
+      <li>
+        <a href="#sec-0">Configuración y estética</a>
+        <ul class="sub-items">
+          <li><a href="#sec-0-carpeta">Carpeta de salida</a></li>
+          <li><a href="#sec-0-rcparams">rcParams y colores</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-1">Ecuaciones del sistema</a>
+        <ul class="sub-items">
+          <li><a href="#sec-1-ec">Las tres EDOs</a></li>
+          <li><a href="#sec-1-lorenz-fn">Función lorenz()</a></li>
+          <li><a href="#sec-1-simular">Función simular()</a></li>
+          <li><a href="#sec-1-rk45">Método RK45 y solve_ivp</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-2">Bloque 1: Evolución temporal</a>
+        <ul class="sub-items">
+          <li><a href="#sec-2-individual">Gráficos individuales</a></li>
+          <li><a href="#sec-2-conjunto">Gráfico conjunto</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-3">Bloque 2: Atractor 3D</a>
+        <ul class="sub-items">
+          <li><a href="#sec-3-transitorio">Transitorio y máscara</a></li>
+          <li><a href="#sec-3-equilibrios">Puntos de equilibrio</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-4">Bloque 3: Sensibilidad</a>
+        <ul class="sub-items">
+          <li><a href="#sec-4-distancia">Distancia euclídea</a></li>
+          <li><a href="#sec-4-semilogy">Escala logarítmica</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-5">Bloque 4: Lyapunov</a>
+        <ul class="sub-items">
+          <li><a href="#sec-5-benettin">Método de Benettin</a></li>
+          <li><a href="#sec-5-reno">Renormalización</a></li>
+          <li><a href="#sec-5-interpretacion">Interpretación física</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-6">Bloque 5: Influencia de ρ</a>
+        <ul class="sub-items">
+          <li><a href="#sec-6-regimenes">Regímenes dinámicos</a></li>
+          <li><a href="#sec-6-barrido">Barrido de Lyapunov</a></li>
+          <li><a href="#sec-6-hopf">Bifurcación de Hopf</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-7">Bloque 6: Sección de Poincaré</a>
+        <ul class="sub-items">
+          <li><a href="#sec-7-deteccion">Detección de cruces</a></li>
+          <li><a href="#sec-7-interp">Interpolación lineal</a></li>
+          <li><a href="#sec-7-dzdt">Condición dz/dt &gt; 0</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-8">Bloque 7: Bifurcaciones</a>
+        <ul class="sub-items">
+          <li><a href="#sec-8-picos">Máximos locales</a></li>
+          <li><a href="#sec-8-lectura">Lectura del diagrama</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-9">Bloque 8: Animación GIF</a>
+        <ul class="sub-items">
+          <li><a href="#sec-9-sub">Submuestreo</a></li>
+          <li><a href="#sec-9-fig">Figura y objetos</a></li>
+          <li><a href="#sec-9-actualizar">Función actualizar()</a></li>
+          <li><a href="#sec-9-funcanim">FuncAnimation y guardado</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sec-10">Bloque 9: Verificación</a>
+      </li>
+      <li>
+        <a href="#sec-main">Función main()</a>
+      </li>
+      <li>
+        <a href="#sec-quiz">Quiz de comprensión</a>
+      </li>
+    </ol>
+  </nav>
+</aside>
+
+<!-- ============================================================
+     CONTENIDO PRINCIPAL
+============================================================ -->
+<main class="content">
+
+  <!-- HERO -->
+  <div class="hero" id="sec-intro">
+    <div class="badge">Material de Estudio</div>
+    <h1>Sistema de Lorenz:<br>Explicación Profunda del Código</h1>
+    <p>Una tutoría personalizada sobre el programa <code>Lorenz_final.py</code>: cada función, cada ecuación, cada decisión de diseño, explicada desde adentro.</p>
+    <div class="meta">Física Computacional · Python · Sistemas Dinámicos · Caos Determinista</div>
+  </div>
+
+  <!-- =========================================================
+       SECCIÓN 0: CONFIGURACIÓN Y ESTÉTICA
+  ========================================================= -->
+  <section class="section" id="sec-0">
+    <div class="section-header">
+      <div class="section-num">0</div>
+      <div>
+        <div class="section-subtitle">Bloque inicial</div>
+        <h2>Importaciones, Configuración y Estética</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 1–30</div>
+      <pre><span class="cm">"""
+SIMULACIÓN Y ANÁLISIS NUMÉRICO DEL SISTEMA DE LORENZ (VERSIÓN SIMPLIFICADA)
+=============================================================================
+Diseñado para máxima claridad pedagógica, comprensión y explicación.
+Genera exactamente los mismos resultados numéricos y gráficos estéticos.
+"""</span>
+
+<span class="kw">import</span> os
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> scipy.integrate <span class="kw">import</span> solve_ivp
+<span class="kw">from</span> matplotlib.animation <span class="kw">import</span> FuncAnimation, PillowWriter</pre>
+    </div>
+
+    <h3>¿Para qué sirve cada biblioteca?</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Biblioteca</th>
+          <th>Rol en el programa</th>
+          <th>Analogía</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>os</code></td>
+          <td>Manejo de archivos y carpetas del sistema operativo. Se usa para construir rutas portables y crear la carpeta <code>resultados/</code>.</td>
+          <td>El administrador de archivos del sistema.</td>
+        </tr>
+        <tr>
+          <td><code>numpy</code> (como <code>np</code>)</td>
+          <td>Aritmética vectorial y matricial eficiente. Genera grillas de tiempo, calcula distancias, maneja arrays de soluciones.</td>
+          <td>Una calculadora científica ultrarrápida que opera sobre vectores completos en un solo paso.</td>
+        </tr>
+        <tr>
+          <td><code>matplotlib.pyplot</code> (como <code>plt</code>)</td>
+          <td>Producción de todos los gráficos: curvas 2D, espacios de fases 3D, diagramas de puntos, etc.</td>
+          <td>La mesa de dibujo científica.</td>
+        </tr>
+        <tr>
+          <td><code>scipy.integrate.solve_ivp</code></td>
+          <td>Integrador de ecuaciones diferenciales ordinarias (EDOs). Es la pieza central de todo el análisis numérico.</td>
+          <td>El motor que "hace avanzar el tiempo" integrando las ecuaciones del sistema.</td>
+        </tr>
+        <tr>
+          <td><code>FuncAnimation</code></td>
+          <td>Genera animaciones cuadro a cuadro a partir de una función de actualización.</td>
+          <td>El motor de animación del programa.</td>
+        </tr>
+        <tr>
+          <td><code>PillowWriter</code></td>
+          <td>Escribe la animación como archivo GIF utilizando la librería Pillow.</td>
+          <td>El exportador al formato GIF.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note callout">
+      <div class="callout-title">📌 Nota sobre el alias <code>as</code></div>
+      Cuando se escribe <code>import numpy as np</code>, simplemente se le da un nombre corto al módulo. Después, cada vez que el programa escribe <code>np.linspace()</code> o <code>np.linalg.norm()</code>, está usando numpy con ese nombre abreviado. Es solo convención, no tiene efecto en el comportamiento.
+    </div>
+
+    <h3 id="sec-0-carpeta">Carpeta de salida y portabilidad</h3>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 17–18</div>
+      <pre>CARPETA_SALIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), <span class="st">"resultados"</span>)
+os.makedirs(CARPETA_SALIDA, exist_ok=<span class="kw">True</span>)</pre>
+    </div>
+
+    <p>Estas dos líneas resuelven un problema práctico: ¿dónde guardar los archivos generados, sin importar desde qué directorio se ejecute el script?</p>
+
+    <ul>
+      <li><code>__file__</code> es una variable especial de Python que contiene la ruta del archivo que se está ejecutando.</li>
+      <li><code>os.path.abspath()</code> convierte esa ruta en una ruta absoluta (desde la raíz del sistema de archivos).</li>
+      <li><code>os.path.dirname()</code> extrae solo el directorio que contiene el script.</li>
+      <li><code>os.path.join(..., "resultados")</code> construye la ruta completa a la carpeta <code>resultados/</code> dentro de ese directorio, usando el separador correcto para el sistema operativo (<code>/</code> en Linux/Mac, <code>\</code> en Windows).</li>
+      <li><code>os.makedirs(..., exist_ok=True)</code> crea esa carpeta si no existe. El parámetro <code>exist_ok=True</code> evita que el programa falle si la carpeta ya existe.</li>
+    </ul>
+
+    <div class="note callout">
+      <div class="callout-title">🔑 Por qué esto importa</div>
+      Sin este bloque, si alguien ejecutara el script desde otra carpeta, los archivos PNG y GIF se guardarían en un lugar inesperado. Esta construcción es una práctica recomendada en scripts científicos para garantizar que los resultados siempre aparezcan junto al código fuente.
+    </div>
+
+    <h3 id="sec-0-rcparams">Configuración visual con <code>rcParams</code></h3>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 20–30</div>
+      <pre>plt.rcParams.update({
+    <span class="st">"figure.facecolor"</span>: <span class="st">"#FFFFFF"</span>, <span class="st">"axes.facecolor"</span>: <span class="st">"#FFFFFF"</span>,
+    <span class="st">"axes.edgecolor"</span>: <span class="st">"#1E293B"</span>, <span class="st">"axes.labelcolor"</span>: <span class="st">"#0F172A"</span>,
+    <span class="st">"xtick.color"</span>: <span class="st">"#1E293B"</span>, <span class="st">"ytick.color"</span>: <span class="st">"#1E293B"</span>,
+    <span class="st">"grid.color"</span>: <span class="st">"#E2E8F0"</span>, <span class="st">"grid.linestyle"</span>: <span class="st">"--"</span>, <span class="st">"grid.alpha"</span>: <span class="nb">0.85</span>,
+    <span class="st">"text.color"</span>: <span class="st">"#0F172A"</span>, <span class="st">"legend.facecolor"</span>: <span class="st">"#FFFFFF"</span>,
+    <span class="st">"font.size"</span>: <span class="nb">10</span>
+})
+
+COLOR_X, COLOR_Y, COLOR_Z = <span class="st">"#0284C7"</span>, <span class="st">"#D97706"</span>, <span class="st">"#059669"</span>
+COLOR_TRAZADO, COLOR_ALT  = <span class="st">"#2563EB"</span>, <span class="st">"#E11D48"</span></pre>
+    </div>
+
+    <p><code>plt.rcParams</code> es un diccionario global de Matplotlib que controla el aspecto visual de todos los gráficos del programa. Al actualizarlo una sola vez al principio, se asegura que todos los gráficos tengan el mismo estilo consistente sin tener que configurar cada figura por separado.</p>
+
+    <p>Las constantes de color (en formato hexadecimal HTML como <code>"#0284C7"</code>) se definen una sola vez y se reutilizan en toda la codebase. Esto tiene dos ventajas: si alguien quiere cambiar un color, lo cambia en un solo lugar; y al leer el código, los nombres descriptivos (<code>COLOR_X</code>, <code>COLOR_ALT</code>) indican claramente qué representan.</p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 1: ECUACIONES DE LORENZ
+  ========================================================= -->
+  <section class="section" id="sec-1">
+    <div class="section-header">
+      <div class="section-num green">1</div>
+      <div>
+        <div class="section-subtitle">Núcleo matemático</div>
+        <h2>Las Ecuaciones Diferenciales del Sistema de Lorenz</h2>
+      </div>
+    </div>
+
+    <p>Antes de leer el código, necesitás entender qué sistema matemático estamos integrando. En 1963, el meteorólogo Edward Lorenz derivó el siguiente sistema de tres ecuaciones diferenciales ordinarias (EDOs) como modelo simplificado de convección atmosférica:</p>
+
+    <div class="eq-block">
+      $$\frac{dx}{dt} = \sigma(y - x)$$
+      $$\frac{dy}{dt} = x(\rho - z) - y$$
+      $$\frac{dz}{dt} = xy - \beta z$$
+    </div>
+
+    <p>El estado del sistema en cada instante es el vector $(x, y, z)$. Las derivadas temporales nos dicen cómo cambia ese vector. El sistema es <strong>determinista</strong> (no hay aleatoriedad), <strong>continuo</strong> (el tiempo es una variable real), y <strong>autónomo</strong> (las ecuaciones no dependen explícitamente de $t$).</p>
+
+    <h4>Significado físico de las variables</h4>
+    <table>
+      <thead><tr><th>Variable</th><th>Significado físico original</th><th>Interpretación dinámica</th></tr></thead>
+      <tbody>
+        <tr><td>$x$</td><td>Intensidad de la corriente de convección (velocidad del fluido)</td><td>Coordenada que oscila entre lóbulos del atractor</td></tr>
+        <tr><td>$y$</td><td>Diferencia de temperatura entre la corriente ascendente y descendente</td><td>Desfasaje térmico horizontal</td></tr>
+        <tr><td>$z$</td><td>Distorsión del perfil de temperatura respecto al equilibrio lineal</td><td>Siempre positivo, oscila entre ~0 y ~50 con ρ=28</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Significado de los parámetros</h4>
+    <table>
+      <thead><tr><th>Parámetro</th><th>Nombre</th><th>Valor estándar</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>$\sigma$ (sigma)</td>
+          <td>Número de Prandtl</td>
+          <td>10.0</td>
+          <td>Razón entre la difusividad cinemática del fluido y la difusividad térmica. Controla qué tan rápido responde $x$ a las diferencias en $y$.</td>
+        </tr>
+        <tr>
+          <td>$\rho$ (rho)</td>
+          <td>Número de Rayleigh reducido</td>
+          <td>28.0</td>
+          <td>Razón entre el número de Rayleigh y el número de Rayleigh crítico. Es el parámetro de control: al variarlo, el sistema transita entre distintos regímenes dinámicos. Es el parámetro más importante del sistema.</td>
+        </tr>
+        <tr>
+          <td>$\beta$ (beta)</td>
+          <td>Factor geométrico</td>
+          <td>8/3 ≈ 2.667</td>
+          <td>Depende de la geometría de la celda de convección. Controla la velocidad de disipación de $z$.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight callout">
+      <div class="callout-title">🌪️ ¿Por qué el sistema es caótico?</div>
+      <p>Observá el término $x(\rho - z)$ en la segunda ecuación y $xy$ en la tercera. Estos productos entre variables crean <strong>no linealidades</strong>: el comportamiento del sistema no es simplemente la suma de los comportamientos de cada variable por separado. Las no linealidades son la fuente del caos. Un sistema puramente lineal (sin esos productos) nunca podría ser caótico.</p>
+    </div>
+
+    <h3 id="sec-1-lorenz-fn">La función <code>lorenz(t, estado, sigma, rho, beta)</code></h3>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 35–40</div>
+      <pre><span class="kw">def</span> <span class="fn">lorenz</span>(t, estado, sigma=<span class="nb">10.0</span>, rho=<span class="nb">28.0</span>, beta=<span class="nb">8.0</span>/<span class="nb">3.0</span>):
+    x, y, z = estado
+    dx_dt = sigma * (y - x)
+    dy_dt = x * (rho - z) - y
+    dz_dt = x * y - beta * z
+    <span class="kw">return</span> [dx_dt, dy_dt, dz_dt]</pre>
+    </div>
+
+    <p>Esta función implementa directamente las tres ecuaciones de Lorenz. Es el corazón matemático de todo el programa.</p>
+
+    <ul>
+      <li><strong>Qué recibe:</strong> el tiempo actual <code>t</code> (que el sistema no usa explícitamente, pero que <code>solve_ivp</code> debe pasar por convención), el vector <code>estado = [x, y, z]</code> en ese instante, y los tres parámetros.</li>
+      <li><strong>Qué hace:</strong> desempaqueta el estado, calcula las tres derivadas según las ecuaciones de Lorenz, y las devuelve como lista.</li>
+      <li><strong>Qué devuelve:</strong> la lista <code>[dx/dt, dy/dt, dz/dt]</code>, que es la <em>velocidad</em> del estado en ese instante. Matemáticamente, es el campo vectorial evaluado en el punto <code>(x,y,z)</code>.</li>
+    </ul>
+
+    <div class="note callout">
+      <div class="callout-title">📌 ¿Por qué aparece <code>t</code> si no se usa?</div>
+      Es una <strong>convención de la API de <code>solve_ivp</code></strong>. El integrador necesita poder llamar a la función de esta forma: <code>lorenz(t, y, ...)</code>. Para sistemas autónomos (donde las ecuaciones no dependen explícitamente del tiempo), <code>t</code> simplemente no se usa dentro del cuerpo de la función, pero igual debe estar en la firma.
+    </div>
+
+    <h3 id="sec-1-simular">La función <code>simular()</code></h3>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 42–45</div>
+      <pre><span class="kw">def</span> <span class="fn">simular</span>(estado_0, t_span, t_eval, sigma=<span class="nb">10.0</span>, rho=<span class="nb">28.0</span>, beta=<span class="nb">8.0</span>/<span class="nb">3.0</span>):
+    <span class="st">"""Integra el sistema con Runge-Kutta 4(5) adaptativo."""</span>
+    <span class="kw">return</span> solve_ivp(lorenz, t_span, estado_0, t_eval=t_eval,
+                     args=(sigma, rho, beta), method=<span class="st">"RK45"</span>, rtol=<span class="nb">1e-8</span>, atol=<span class="nb">1e-8</span>)</pre>
+    </div>
+
+    <p>Esta función es un <em>wrapper</em> conveniente alrededor de <code>solve_ivp</code>. Encapsula todos los parámetros de integración comunes para no repetirlos en cada bloque del programa.</p>
+
+    <h4>Parámetros de <code>simular()</code></h4>
+
+    <div class="var-grid">
+      <div class="var-card">
+        <code>estado_0</code>
+        <p>Lista con las condiciones iniciales $[x_0, y_0, z_0]$. Define el punto de partida de la trayectoria en el espacio de fases.</p>
+      </div>
+      <div class="var-card">
+        <code>t_span</code>
+        <p>Tupla <code>(t_inicio, t_fin)</code> que define el intervalo total de integración.</p>
+      </div>
+      <div class="var-card">
+        <code>t_eval</code>
+        <p>Array de tiempos en los que se quiere obtener la solución. No son los pasos del integrador, sino los puntos de salida.</p>
+      </div>
+      <div class="var-card">
+        <code>args=(sigma, rho, beta)</code>
+        <p>Parámetros extra que se pasan a la función <code>lorenz()</code>. Permite cambiar el comportamiento sin modificar la función.</p>
+      </div>
+    </div>
+
+    <h3 id="sec-1-rk45">El método RK45 y <code>solve_ivp</code> en profundidad</h3>
+
+    <p><code>solve_ivp</code> ("solve initial value problem") es la función de SciPy para integrar sistemas de EDOs con condición inicial dada. Con <code>method="RK45"</code>, usa el método de Runge-Kutta de orden 4(5) de Dormand-Prince.</p>
+
+    <h4>¿Qué es Runge-Kutta 4(5)?</h4>
+
+    <p>La idea central de cualquier método de Runge-Kutta es avanzar la solución de $t$ a $t + h$ evaluando el campo vectorial en varios puntos intermedios y combinando esas evaluaciones para obtener una estimación precisa del siguiente estado. El método RK45 usa 6 evaluaciones por paso:</p>
+
+    <div class="eq-block">
+      $$k_1 = f(t_n,\, y_n)$$
+      $$k_2 = f\!\left(t_n + \tfrac{h}{5},\; y_n + \tfrac{h}{5}k_1\right)$$
+      $$\vdots$$
+      $$y_{n+1}^{(4)} = y_n + h\sum_{i=1}^{6} b_i k_i \quad \text{(orden 4)}$$
+      $$y_{n+1}^{(5)} = y_n + h\sum_{i=1}^{6} b_i^* k_i \quad \text{(orden 5)}$$
+    </div>
+
+    <p>El "truco" del RK45 es que calcula simultáneamente una solución de <strong>orden 4</strong> y una de <strong>orden 5</strong> usando las mismas evaluaciones de $f$. La diferencia entre ambas estima el error cometido en el paso.</p>
+
+    <h4>Control adaptativo del paso</h4>
+
+    <p>Si el error estimado es mayor que la tolerancia especificada, el integrador reduce $h$ y repite el paso. Si el error es mucho menor, aumenta $h$ para acelerar la integración. Esto es el <strong>control adaptativo del paso</strong>: el integrador elige automáticamente pasos pequeños donde la solución varía rápido (en las oscilaciones) y pasos grandes donde varía lento.</p>
+
+    <div class="math-box callout">
+      <div class="callout-title">📐 Tolerancias rtol y atol</div>
+      <p>El control del error usa una combinación de dos tolerancias:</p>
+      <ul>
+        <li><strong><code>rtol=1e-8</code> (tolerancia relativa):</strong> el error en cada componente del estado debe ser menor que <code>rtol * |y_i|</code>. Es decir, el error relativo no supera $10^{-8}$.</li>
+        <li><strong><code>atol=1e-8</code> (tolerancia absoluta):</strong> establece un piso para el error admisible cuando la solución es muy pequeña (cerca de cero). Evita que el integrador exija precisión imposible cuando $|y_i| \approx 0$.</li>
+      </ul>
+      <p>El criterio combinado es: error $\leq$ <code>atol + rtol × |y|</code>. El valor $10^{-8}$ es estricto y adecuado para cálculos de Lyapunov donde se mide separaciones de $10^{-8}$.</p>
+    </div>
+
+    <div class="note callout">
+      <div class="callout-title">📌 Diferencia entre pasos internos y <code>t_eval</code></div>
+      <p>Hay que distinguir dos cosas distintas:</p>
+      <ul>
+        <li><strong>Pasos internos del integrador:</strong> los tamaños de paso $h$ que RK45 elige automáticamente para controlar el error. Pueden ser irregulares y muy numerosos. No los vemos directamente.</li>
+        <li><strong><code>t_eval</code>:</strong> los instantes de tiempo en que queremos que la solución nos informe el resultado. Estos son los que fijamos nosotros con <code>np.linspace()</code>. SciPy interpola internamente para dar el valor exacto en esos tiempos.</li>
+      </ul>
+      <p>En otras palabras: el integrador trabaja con sus propios pasos variables internamente, y al llegar a cada tiempo pedido en <code>t_eval</code> nos reporta el estado del sistema.</p>
+    </div>
+
+    <h4>El objeto solución que devuelve <code>solve_ivp</code></h4>
+
+    <p><code>solve_ivp</code> devuelve un objeto con varios atributos. En este programa se usan:</p>
+
+    <div class="var-grid">
+      <div class="var-card">
+        <code>sol.t</code>
+        <p>Array 1D con los tiempos evaluados (coincide con <code>t_eval</code>). Forma: <code>(N,)</code>.</p>
+      </div>
+      <div class="var-card">
+        <code>sol.y</code>
+        <p>Matriz 2D con la solución. Forma: <code>(3, N)</code>. Fila 0 = x(t), fila 1 = y(t), fila 2 = z(t).</p>
+      </div>
+      <div class="var-card">
+        <code>sol.status</code>
+        <p>Código de estado: 0 = éxito, 1 = se alcanzó el intervalo máximo, -1 = error.</p>
+      </div>
+      <div class="var-card">
+        <code>sol.y[:, -1]</code>
+        <p>El estado final (última columna). Forma: <code>(3,)</code>. Se usa para encadenar integraciones.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 2: BLOQUE 1
+  ========================================================= -->
+  <section class="section" id="sec-2">
+    <div class="section-header">
+      <div class="section-num amber">1</div>
+      <div>
+        <div class="section-subtitle">Bloque 1</div>
+        <h2>Evolución Temporal de x(t), y(t), z(t)</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 51–73</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_1_evolucion_temporal</span>(t, x, y, z):
+    <span class="cm"># Gráficos individuales</span>
+    series = [(<span class="st">"x(t) - Convección"</span>, x, COLOR_X, <span class="st">"01_evolucion_x.png"</span>),
+              (<span class="st">"y(t) - Gradiente Térmico"</span>, y, COLOR_Y, <span class="st">"01_evolucion_y.png"</span>),
+              (<span class="st">"z(t) - Perfil Vertical"</span>, z, COLOR_Z, <span class="st">"01_evolucion_z.png"</span>)]
+    <span class="kw">for</span> titulo, datos, col, arch <span class="kw">in</span> series:
+        fig, ax = plt.subplots(figsize=(<span class="nb">10</span>, <span class="nb">4</span>))
+        ax.plot(t, datos, color=col, lw=<span class="nb">1.1</span>)
+        ax.set(title=f<span class="st">"Sistema de Lorenz: {titulo}"</span>,
+               xlabel=<span class="st">"Tiempo $t$ [u.a.]"</span>, ylabel=<span class="st">"Amplitud [u.a.]"</span>)
+        ax.grid(True)
+        plt.tight_layout()
+        plt.savefig(os.path.join(CARPETA_SALIDA, arch), dpi=<span class="nb">200</span>)
+
+    <span class="cm"># Gráfico conjunto de 3 paneles</span>
+    fig, (ax1, ax2, ax3) = plt.subplots(<span class="nb">3</span>, <span class="nb">1</span>, figsize=(<span class="nb">11</span>, <span class="nb">7</span>), sharex=<span class="kw">True</span>)
+    ax1.plot(t, x, color=COLOR_X, lw=<span class="nb">1.0</span>, label=<span class="st">"$x(t)$"</span>); ax1.grid(<span class="kw">True</span>); ax1.legend()
+    ax2.plot(t, y, color=COLOR_Y, lw=<span class="nb">1.0</span>, label=<span class="st">"$y(t)$"</span>); ax2.grid(<span class="kw">True</span>); ax2.legend()
+    ax3.plot(t, z, color=COLOR_Z, lw=<span class="nb">1.0</span>, label=<span class="st">"$z(t)$"</span>); ax3.grid(<span class="kw">True</span>); ax3.legend()
+    ax3.set_xlabel(<span class="st">"Tiempo $t$ [u.a.]"</span>)
+    plt.suptitle(<span class="st">"Evolución Temporal Conjunta del Sistema de Lorenz"</span>, y=<span class="nb">0.98</span>)
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, <span class="st">"01_evolucion_temporal_conjunta.png"</span>), dpi=<span class="nb">200</span>)
+    print(<span class="st">"✓ Bloque 1 completado: Evolución temporal guardada."</span>)</pre>
+    </div>
+
+    <h3 id="sec-2-individual">Gráficos individuales: el patrón "lista de tuplas"</h3>
+
+    <p>La variable <code>series</code> es una lista de tuplas, donde cada tupla agrupa todo lo necesario para generar un gráfico: título, datos, color y nombre de archivo. El <code>for</code> que sigue itera sobre esa lista y genera los tres gráficos con exactamente el mismo código, cambiando solo los valores de cada tupla.</p>
+
+    <p>Este patrón es muy elegante: en lugar de repetir el mismo bloque de código tres veces con pequeñas variaciones, se factoriza en una sola función y se le pasan los datos variables. Si en el futuro se quisiera cambiar el estilo de todos los gráficos, habría que modificar una sola línea.</p>
+
+    <ul>
+      <li><code>plt.subplots(figsize=(10, 4))</code>: crea una figura de 10 pulgadas de ancho y 4 de alto, y devuelve la figura y el eje de coordenadas.</li>
+      <li><code>ax.plot(t, datos, ...)</code>: dibuja la curva $\text{datos}(t)$.</li>
+      <li><code>ax.set(...)</code>: forma compacta de llamar a <code>ax.set_title()</code>, <code>ax.set_xlabel()</code>, etc., todo a la vez.</li>
+      <li><code>plt.tight_layout()</code>: ajusta automáticamente los márgenes para evitar que etiquetas y títulos se superpongan.</li>
+      <li><code>plt.savefig(..., dpi=200)</code>: guarda la figura como PNG con resolución de 200 puntos por pulgada (suficiente para presentaciones).</li>
+    </ul>
+
+    <h3 id="sec-2-conjunto">Gráfico conjunto: <code>sharex=True</code></h3>
+
+    <p><code>plt.subplots(3, 1, sharex=True)</code> crea tres paneles apilados verticalmente que <strong>comparten el eje x</strong>. Esto significa que si el usuario hace zoom en el tiempo en un panel, los tres se mueven al unísono. Es una elección de diseño muy útil para comparar la evolución simultánea de x, y, z.</p>
+
+    <div class="note callout">
+      <div class="callout-title">🔎 ¿Qué se ve en estos gráficos?</div>
+      <p>Al graficar x(t), y(t), z(t) verás que las tres variables oscilan de manera compleja y aperiódica. Nunca repiten exactamente el mismo patrón. Esto es el caos en el tiempo: la solución es perfectamente determinista (siempre la misma si usamos las mismas condiciones iniciales), pero no es periódica. z(t) siempre es positiva (oscila alrededor de ~25); x(t) e y(t) cambian de signo, saltando erráticamente de un "lóbulo" al otro del atractor.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 3: BLOQUE 2 - ATRACTOR
+  ========================================================= -->
+  <section class="section" id="sec-3">
+    <div class="section-header">
+      <div class="section-num green">2</div>
+      <div>
+        <div class="section-subtitle">Bloque 2</div>
+        <h2>El Atractor Extraño en el Espacio de Fases 3D</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 79–96</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_2_atractor_3d</span>(t, x, y, z, t_corte=<span class="nb">5.0</span>):
+    <span class="cm"># Descartamos el transitorio t &lt; t_corte para ver el atractor estabilizado</span>
+    mask = t &gt;= t_corte
+    fig = plt.figure(figsize=(<span class="nb">10</span>, <span class="nb">8</span>))
+    ax = fig.add_subplot(projection=<span class="st">"3d"</span>)
+    ax.plot(x[mask], y[mask], z[mask], color=COLOR_TRAZADO, lw=<span class="nb">0.75</span>, alpha=<span class="nb">0.9</span>,
+            label=<span class="st">"Atractor de Lorenz"</span>)
+
+    <span class="cm"># Puntos fijos C+ y C-: x* = y* = ±sqrt(beta*(rho-1)), z* = rho - 1</span>
+    xc, zc = np.sqrt((<span class="nb">8</span>/<span class="nb">3</span>) * (<span class="nb">28.0</span> - <span class="nb">1.0</span>)), <span class="nb">28.0</span> - <span class="nb">1.0</span>
+    ax.scatter([xc, -xc], [xc, -xc], [zc, zc], color=COLOR_ALT, s=<span class="nb">35</span>,
+               label=<span class="st">r"Puntos fijos $C^+, C^-$"</span>, zorder=<span class="nb">5</span>)
+
+    ax.set(title=<span class="st">r"Atractor Extraño de Lorenz ($\sigma=10, \rho=28, \beta=8/3$)"</span>,
+           xlabel=<span class="st">"x [u.a.]"</span>, ylabel=<span class="st">"y [u.a.]"</span>, zlabel=<span class="st">"z [u.a.]"</span>)
+    ax.view_init(elev=<span class="nb">22</span>, azim=<span class="nb">-62</span>)
+    ax.legend(loc=<span class="st">"upper left"</span>)
+    plt.tight_layout()
+    plt.savefig(os.path.join(CARPETA_SALIDA, <span class="st">"02_atractor_lorenz_3d.png"</span>), dpi=<span class="nb">200</span>)
+    print(<span class="st">"✓ Bloque 2 completado: Atractor 3D guardado."</span>)</pre>
+    </div>
+
+    <h3 id="sec-3-transitorio">El transitorio y la máscara booleana</h3>
+
+    <p>La línea <code>mask = t >= t_corte</code> crea un array booleano: cada elemento es <code>True</code> si el tiempo correspondiente es mayor o igual a 5 y <code>False</code> en caso contrario. Después, <code>x[mask]</code> selecciona solo los valores de x donde <code>mask</code> es <code>True</code>.</p>
+
+    <p>¿Por qué descartar el transitorio? Al comienzo de la integración, la trayectoria parte desde el punto $(1, 1, 1)$, que probablemente está fuera del atractor. Durante los primeros instantes, la solución "cae" hacia el atractor pero aún no está en él. Esta fase inicial se llama <strong>transitorio</strong>. Al descartarla, el gráfico muestra únicamente la dinámica asintótica del sistema: la forma del atractor sin la "cola" inicial que distorsionaría la visualización.</p>
+
+    <div class="note callout">
+      <div class="callout-title">📌 ¿Qué es el espacio de fases?</div>
+      <p>El espacio de fases (o espacio de estados) es el espacio matemático cuyas coordenadas son las variables del sistema: en este caso $(x, y, z)$. Cada punto del espacio de fases representa un estado completo del sistema. La solución del sistema traza una <strong>curva continua</strong> en este espacio, llamada <em>trayectoria</em> u <em>órbita</em>. El gráfico 3D de este bloque muestra esa trayectoria.</p>
+    </div>
+
+    <h3 id="sec-3-equilibrios">Los puntos de equilibrio $C^+$ y $C^-$</h3>
+
+    <p>Un punto de equilibrio (o punto fijo) es un estado $(x^*, y^*, z^*)$ donde todas las derivadas son cero, es decir, el sistema no evoluciona. Para el sistema de Lorenz con $\rho > 1$, hay tres puntos de equilibrio:</p>
+
+    <div class="eq-block">
+      $$C^0 = (0,\, 0,\, 0)$$
+      $$C^{\pm} = \left(\pm\sqrt{\beta(\rho-1)},\;\pm\sqrt{\beta(\rho-1)},\;\rho-1\right)$$
+    </div>
+
+    <p>El código calcula $C^+$ y $C^-$ para los valores estándar ($\beta = 8/3$, $\rho = 28$):</p>
+
+    <div class="code-block">
+      <div class="code-label">Cálculo de los puntos fijos</div>
+      <pre>xc = np.sqrt((8/3) * (28.0 - 1.0))   <span class="cm"># = sqrt(8/3 × 27) = sqrt(72) ≈ 8.485</span>
+zc = 28.0 - 1.0                        <span class="cm"># = 27.0</span>
+
+<span class="cm"># C+ = (8.485, 8.485, 27.0)</span>
+<span class="cm"># C- = (-8.485, -8.485, 27.0)</span></pre>
+    </div>
+
+    <div class="insight callout">
+      <div class="callout-title">🔬 Interpretación física y matemática de C⁺ y C⁻</div>
+      <p>Aunque el sistema con $\rho = 28$ tiene esos puntos de equilibrio, <strong>son inestables</strong>. Si pusieras el sistema exactamente en $C^+$, teóricamente se quedaría ahí; pero cualquier perturbación infinitesimalmente pequeña lo alejaría exponencialmente. En el gráfico 3D, el atractor "rodea" a $C^+$ y $C^-$: la trayectoria orbita alrededor de uno de ellos por un número aleatorio de vueltas, luego salta al otro, y así indefinidamente. Los puntos rojos en el gráfico son precisamente $C^+$ y $C^-$.</p>
+    </div>
+
+    <h4>El gráfico 3D en Matplotlib</h4>
+
+    <p>La línea <code>ax = fig.add_subplot(projection="3d")</code> crea un eje tridimensional. A diferencia de un eje 2D, este tiene tres ejes coordenados. La línea <code>ax.view_init(elev=22, azim=-62)</code> establece el punto de vista de la cámara virtual: elevación de 22 grados sobre el plano horizontal, y azimut de −62 grados. Esta perspectiva particular muestra bien la forma de mariposa del atractor.</p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 4: BLOQUE 3 - SENSIBILIDAD
+  ========================================================= -->
+  <section class="section" id="sec-4">
+    <div class="section-header">
+      <div class="section-num red">3</div>
+      <div>
+        <div class="section-subtitle">Bloque 3</div>
+        <h2>Sensibilidad a las Condiciones Iniciales (Efecto Mariposa)</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 102–136</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_3_sensibilidad</span>():
+    <span class="cm"># Dos condiciones iniciales separadas microscópicamente por delta_0 = 1e-8</span>
+    t_eval = np.linspace(<span class="nb">0.0</span>, <span class="nb">35.0</span>, <span class="nb">3500</span>)
+    s1 = simular([<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>], (<span class="nb">0.0</span>, <span class="nb">35.0</span>), t_eval)
+    s2 = simular([<span class="nb">1.0</span> + <span class="nb">1e-8</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>], (<span class="nb">0.0</span>, <span class="nb">35.0</span>), t_eval)
+    t, (x1, y1, z1), (x2, y2, z2) = s1.t, s1.y, s2.y
+
+    <span class="cm"># Distancia euclídea d(t) en el espacio 3D</span>
+    d_t = np.linalg.norm(s1.y - s2.y, axis=<span class="nb">0</span>)
+
+    <span class="cm"># ... (gráficos) ...</span>
+    ax2.semilogy(t, d_t, color=COLOR_Y, lw=<span class="nb">1.3</span>, label=<span class="st">r"Distancia euclídea $d(t)$"</span>)
+    ax2.axhline(<span class="nb">1e-8</span>, color=<span class="st">"#64748B"</span>, ls=<span class="st">":"</span>, label=<span class="st">r"Separación inicial ($10^{-8}$)"</span>)</pre>
+    </div>
+
+    <h3>¿Por qué dos condiciones iniciales casi idénticas?</h3>
+
+    <p>La diferencia entre los dos estados iniciales es:</p>
+
+    <div class="eq-block">
+      $$\Delta x_0 = 10^{-8}, \quad \Delta y_0 = 0, \quad \Delta z_0 = 0$$
+    </div>
+
+    <p>Un centímetro equivale a $10^{-2}$ metros; $10^{-8}$ metros es la escala de los nanómetros. Esta perturbación es <em>astronómicamente pequeña</em>. En un sistema físico real, sería imposible de distinguir experimentalmente.</p>
+
+    <p>El propósito es demostrar que el sistema de Lorenz es <strong>sensitivamente dependiente de las condiciones iniciales</strong>: una diferencia inicial que parece despreciable crece hasta hacerse macroscópica en tiempo finito. Esta propiedad es la esencia del caos determinista.</p>
+
+    <h3 id="sec-4-distancia">La distancia euclídea: <code>np.linalg.norm()</code></h3>
+
+    <p>La distancia entre dos puntos del espacio de fases $\mathbf{X}_1(t) = (x_1, y_1, z_1)$ y $\mathbf{X}_2(t) = (x_2, y_2, z_2)$ es:</p>
+
+    <div class="eq-block">
+      $$d(t) = \|\mathbf{X}_1(t) - \mathbf{X}_2(t)\| = \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2 + (z_1-z_2)^2}$$
+    </div>
+
+    <p>En el código: <code>s1.y - s2.y</code> calcula la diferencia entre las dos matrices de solución (cada columna es un instante de tiempo); y <code>np.linalg.norm(..., axis=0)</code> calcula la norma euclídea de cada columna por separado (a lo largo del eje 0, que corresponde a las tres componentes espaciales). El resultado es un array 1D de $N$ elementos, donde cada elemento es $d(t_k)$.</p>
+
+    <h3 id="sec-4-semilogy">La escala logarítmica: <code>ax.semilogy()</code></h3>
+
+    <p><code>ax.semilogy()</code> grafica con el eje y en escala logarítmica y el eje x en escala lineal. ¿Por qué usar escala logarítmica?</p>
+
+    <p>En un sistema caótico, la separación entre dos trayectorias cercanas crece inicialmente de manera <strong>exponencial</strong>:</p>
+
+    <div class="eq-block">
+      $$d(t) \approx d_0 \, e^{\lambda_{\max} t}$$
+    </div>
+
+    <p>Si graficamos $d(t)$ en escala lineal, veríamos una curva que se dispara hacia arriba de forma casi vertical. En cambio, si tomamos el logaritmo:</p>
+
+    <div class="eq-block">
+      $$\ln d(t) \approx \ln d_0 + \lambda_{\max} t$$
+    </div>
+
+    <p>Esto es una <strong>línea recta</strong> en el gráfico semilogarítmico, con pendiente $\lambda_{\max}$. El crecimiento exponencial se vuelve visible como una rampa lineal, lo cual es mucho más fácil de analizar. Cuando la distancia se satura (porque las trayectorias quedan confinadas dentro del atractor), la curva se aplana.</p>
+
+    <div class="insight callout">
+      <div class="callout-title">🌪️ El caos determinista explicado con este gráfico</div>
+      <p>Lo que el gráfico de $d(t)$ en escala log te muestra es: hay una fase inicial donde las dos trayectorias son casi indistinguibles (la curva está cerca de $10^{-8}$), luego una fase de crecimiento exponencial (la recta ascendente en el gráfico log), y finalmente una saturación cuando las trayectorias se encuentran en partes completamente distintas del atractor y la distancia no puede crecer más. Este es el límite de predictibilidad del sistema.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 5: BLOQUE 4 - LYAPUNOV
+  ========================================================= -->
+  <section class="section" id="sec-5">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <div class="section-subtitle">Bloque 4</div>
+        <h2>Máximo Exponente de Lyapunov (Método de Benettin)</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 142–186</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_4_lyapunov</span>(d0=<span class="nb">1e-8</span>, tau=<span class="nb">0.1</span>, n_pasos=<span class="nb">250</span>):
+    <span class="st">"""
+    Algoritmo de Benettin (1976):
+    Evoluciona 2 estados a distancia d0. Tras cada intervalo tau,
+    mide la separación d1, acumula ln(d1/d0) y renormaliza a distancia d0.
+    """</span>
+    <span class="cm"># 1. Pre-evolución para entrar en el atractor</span>
+    s_ref = solve_ivp(lorenz, (<span class="nb">0.0</span>, <span class="nb">10.0</span>), [<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>],
+                      method=<span class="st">"RK45"</span>, rtol=<span class="nb">1e-8</span>, atol=<span class="nb">1e-8</span>).y[:, -<span class="nb">1</span>]
+    s_pert = s_ref.copy(); s_pert[<span class="nb">0</span>] += d0
+
+    suma_log = <span class="nb">0.0</span>
+    tiempos, lyap_acumulado = [], []
+
+    <span class="kw">for</span> k <span class="kw">in</span> range(<span class="nb">1</span>, n_pasos + <span class="nb">1</span>):
+        <span class="cm"># Avanzar ambas trayectorias un paso tau</span>
+        s_r_fin = solve_ivp(lorenz, (<span class="nb">0.0</span>, tau), s_ref, method=<span class="st">"RK45"</span>, rtol=<span class="nb">1e-8</span>, atol=<span class="nb">1e-8</span>).y[:, -<span class="nb">1</span>]
+        s_p_fin = solve_ivp(lorenz, (<span class="nb">0.0</span>, tau), s_pert, method=<span class="st">"RK45"</span>, rtol=<span class="nb">1e-8</span>, atol=<span class="nb">1e-8</span>).y[:, -<span class="nb">1</span>]
+
+        <span class="cm"># Medir separación y acumular tasa logarítmica</span>
+        delta = s_p_fin - s_r_fin
+        d1 = np.linalg.norm(delta)
+        suma_log += np.log(d1 / d0)
+
+        t_actual = k * tau
+        tiempos.append(t_actual)
+        lyap_acumulado.append(suma_log / t_actual)
+
+        <span class="cm"># Renormalización: reubicar s_pert a distancia d0 en la dirección de divergencia</span>
+        s_ref = s_r_fin
+        s_pert = s_r_fin + d0 * (delta / d1)
+
+    lambda_est = lyap_acumulado[-<span class="nb">1</span>]
+    <span class="kw">return</span> lambda_est</pre>
+    </div>
+
+    <h3>¿Qué mide el exponente máximo de Lyapunov?</h3>
+
+    <p>El exponente máximo de Lyapunov $\lambda_{\max}$ cuantifica la tasa promedio de divergencia exponencial entre trayectorias inicialmente cercanas. Matemáticamente:</p>
+
+    <div class="eq-block">
+      $$\lambda_{\max} = \lim_{t \to \infty} \lim_{\|\delta_0\| \to 0} \frac{1}{t} \ln \frac{\|\delta(t)\|}{\|\delta_0\|}$$
+    </div>
+
+    <p>Donde $\delta_0$ es la separación inicial y $\delta(t)$ es la separación en el tiempo $t$. Si $\lambda_{\max} > 0$, el sistema es caótico: pequeñas diferencias crecen exponencialmente. Si $\lambda_{\max} \leq 0$, el sistema es regular (puntos fijos, ciclos límite).</p>
+
+    <h3 id="sec-5-benettin">El método de Benettin paso a paso</h3>
+
+    <p>El problema práctico con la definición anterior es que si las trayectorias divergen exponencialmente, en tiempo finito la separación $\|\delta(t)\|$ se hace tan grande que las dos trayectorias ya no están "cerca" en el sentido que requiere la teoría. Benettin (1976) propuso un algoritmo que resuelve esto:</p>
+
+    <div class="flow-diagram">
+      <div class="flow-box">Pre-evolución<br><small>t: 0→10</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Avanzar ambas<br>trayectorias τ</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Medir d₁<br>acumular ln(d₁/d₀)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Renormalizar<br>a distancia d₀</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Repetir N veces</div>
+    </div>
+
+    <h4>Paso 0: Pre-evolución</h4>
+    <p>Se integra el sistema 10 unidades de tiempo para asegurarse de que el punto de referencia esté en el atractor antes de comenzar el cálculo. Si se empezara desde $(1,1,1)$ directamente, los primeros pasos del algoritmo medirían la dinámica transitoria, que no es representativa del atractor.</p>
+
+    <h4>Paso 1: Avanzar ambas trayectorias</h4>
+    <p>Se toman los dos estados (referencia y perturbado) y se integran cada uno durante <code>tau = 0.1</code> unidades de tiempo. <code>solve_ivp(...).y[:, -1]</code> extrae solo el estado final (última columna de la matriz de solución).</p>
+
+    <h4>Paso 2: Medir la separación</h4>
+    <p><code>delta = s_p_fin - s_r_fin</code> es el vector diferencia entre los dos estados finales. <code>d1 = np.linalg.norm(delta)</code> es su norma: la distancia euclídea. Luego se acumula:</p>
+
+    <div class="eq-block">
+      $$\text{suma\_log} \mathrel{+}= \ln\!\left(\frac{d_1}{d_0}\right)$$
+    </div>
+
+    <h3 id="sec-5-reno">La renormalización: el corazón del algoritmo</h3>
+
+    <div class="code-block">
+      <div class="code-label">La línea más importante</div>
+      <pre>s_pert = s_r_fin + d0 * (delta / d1)</pre>
+    </div>
+
+    <p>Analicemos esta línea cuidadosamente:</p>
+    <ul>
+      <li><code>delta / d1</code> es el vector unitario en la dirección de divergencia (tiene norma 1).</li>
+      <li><code>d0 * (delta / d1)</code> es un vector de norma <code>d0</code> en esa misma dirección.</li>
+      <li><code>s_r_fin + ...</code> ubica el nuevo punto perturbado a una distancia exactamente <code>d0</code> del punto de referencia, en la dirección en que las trayectorias divergieron.</li>
+    </ul>
+
+    <p>El propósito es doble. Primero, se evita que la separación crezca tanto que las dos trayectorias estén en regiones completamente distintas del atractor. Segundo, se sigue midiendo la divergencia en la dirección más inestable, que es precisamente la dirección que determina $\lambda_{\max}$.</p>
+
+    <h4>Estimación acumulada</h4>
+
+    <p>En cada paso $k$, se guarda la estimación temporal:</p>
+
+    <div class="eq-block">
+      $$\hat{\lambda}(k\tau) = \frac{1}{k\tau}\sum_{i=1}^{k}\ln\!\left(\frac{d_1^{(i)}}{d_0}\right)$$
+    </div>
+
+    <p>Esto es la media temporal de los logaritmos de las tasas de estiramiento. Si el exponente converge, esta cantidad se estabiliza cerca de $\lambda_{\max} \approx 0.906$.</p>
+
+    <h3 id="sec-5-interpretacion">Interpretación física de λ &gt; 0</h3>
+
+    <p>Un exponente de Lyapunov positivo $\lambda \approx 0.906$ significa que dos estados que difieren en $10^{-8}$ se separarán hasta ser comparables con el tamaño del atractor en un tiempo del orden de:</p>
+
+    <div class="eq-block">
+      $$T_{\text{predicción}} \approx \frac{\ln(d_{\text{atractor}} / d_0)}{\lambda_{\max}} \approx \frac{\ln(100 / 10^{-8})}{0.906} \approx \frac{23}{0.906} \approx 25 \text{ u.a.}$$
+    </div>
+
+    <p>Más allá de ese horizonte temporal, toda predicción determinista se vuelve inútil. No importa cuán precisa sea la medición inicial: el horizonte de predictibilidad es finito y está determinado por $\lambda_{\max}$.</p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 6: BLOQUE 5 - INFLUENCIA DE RHO
+  ========================================================= -->
+  <section class="section" id="sec-6">
+    <div class="section-header">
+      <div class="section-num amber">5</div>
+      <div>
+        <div class="section-subtitle">Bloque 5</div>
+        <h2>Influencia del Parámetro ρ: Transición al Caos</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 192–238</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_5_influencia_rho</span>():
+    <span class="cm"># 1. Comparación visual de atractores para 4 regímenes</span>
+    rhos = [<span class="nb">14.0</span>, <span class="nb">21.0</span>, <span class="nb">28.0</span>, <span class="nb">100.0</span>]
+    titulos = [<span class="st">r"$\rho = 14$ (Puntos fijos estables)"</span>,
+               <span class="st">r"$\rho = 21$ (Pre-caos transitorio)"</span>,
+               <span class="st">r"$\rho = 28$ (Atractor caótico clásico)"</span>,
+               <span class="st">r"$\rho = 100$ (Caos extendido)"</span>]
+
+    fig, axes = plt.subplots(<span class="nb">2</span>, <span class="nb">2</span>, figsize=(<span class="nb">13</span>, <span class="nb">10</span>), subplot_kw={<span class="st">"projection"</span>: <span class="st">"3d"</span>})
+    t_eval = np.linspace(<span class="nb">5.0</span>, <span class="nb">30.0</span>, <span class="nb">2500</span>)   <span class="cm"># Empieza en t=5 para descartar transitorio</span>
+    <span class="kw">for</span> r, ax, col, tit <span class="kw">in</span> zip(rhos, axes.flatten(), colores, titulos):
+        sol = simular([<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>], (<span class="nb">0.0</span>, <span class="nb">30.0</span>), t_eval, rho=r)
+        ax.plot(sol.y[<span class="nb">0</span>], sol.y[<span class="nb">1</span>], sol.y[<span class="nb">2</span>], ...)
+
+    <span class="cm"># 2. Barrido de Lyapunov en función de rho</span>
+    rhos_barrido = [<span class="nb">10.0</span>, <span class="nb">14.0</span>, <span class="nb">18.0</span>, <span class="nb">22.0</span>, <span class="nb">25.0</span>, <span class="nb">28.0</span>, <span class="nb">35.0</span>, <span class="nb">45.0</span>, <span class="nb">60.0</span>]
+    lyaps = []
+    <span class="kw">for</span> r <span class="kw">in</span> rhos_barrido:
+        <span class="cm"># Mini-Benettin (tau=0.1, N=100)</span>
+        s_r = solve_ivp(lorenz, (<span class="nb">0.0</span>, <span class="nb">10.0</span>), [<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>],
+                        args=(<span class="nb">10.0</span>, r, <span class="nb">8</span>/<span class="nb">3</span>), method=<span class="st">"RK45"</span>).y[:, -<span class="nb">1</span>]
+        s_p = s_r.copy(); s_p[<span class="nb">0</span>] += <span class="nb">1e-6</span>
+        s_log = <span class="nb">0.0</span>
+        <span class="kw">for</span> _ <span class="kw">in</span> range(<span class="nb">100</span>):
+            sr_next = solve_ivp(lorenz, (<span class="nb">0.0</span>, <span class="nb">0.1</span>), s_r, args=(<span class="nb">10.0</span>, r, <span class="nb">8</span>/<span class="nb">3</span>), method=<span class="st">"RK45"</span>).y[:, -<span class="nb">1</span>]
+            sp_next = solve_ivp(lorenz, (<span class="nb">0.0</span>, <span class="nb">0.1</span>), s_p, args=(<span class="nb">10.0</span>, r, <span class="nb">8</span>/<span class="nb">3</span>), method=<span class="st">"RK45"</span>).y[:, -<span class="nb">1</span>]
+            diff = sp_next - sr_next
+            d1 = np.linalg.norm(diff)
+            s_log += np.log(d1 / <span class="nb">1e-6</span>)
+            s_r = sr_next
+            s_p = sr_next + <span class="nb">1e-6</span> * (diff / d1)
+        lyaps.append(s_log / <span class="nb">10.0</span>)
+
+    ax.axvline(<span class="nb">24.74</span>, color=COLOR_ALT, ls=<span class="st">"--"</span>, label=<span class="st">r"Hopf subcrítica ($\rho_H \approx 24.74$)"</span>)</pre>
+    </div>
+
+    <h3 id="sec-6-regimenes">Los cuatro regímenes dinámicos</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Valor de ρ</th>
+          <th>Comportamiento</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>$\rho = 14$</td>
+          <td>Puntos fijos estables</td>
+          <td>El sistema converge a uno de los dos puntos fijos $C^+$ o $C^-$. La trayectoria en 3D es una espiral que cae en un punto. No hay caos.</td>
+        </tr>
+        <tr>
+          <td>$\rho = 21$</td>
+          <td>Pre-caos transitorio</td>
+          <td>El sistema muestra comportamiento caótico transitorio: oscila durante un tiempo, pero eventualmente cae en uno de los puntos fijos. La duración del caos transitorio varía con las condiciones iniciales.</td>
+        </tr>
+        <tr>
+          <td>$\rho = 28$</td>
+          <td>Atractor caótico clásico</td>
+          <td>El sistema nunca converge: el atractor extraño de Lorenz. Comportamiento caótico permanente.</td>
+        </tr>
+        <tr>
+          <td>$\rho = 100$</td>
+          <td>Caos extendido</td>
+          <td>El atractor existe pero tiene una geometría muy distinta: más compleja, con excursiones más amplias en el espacio de fases.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec-6-barrido">El barrido de Lyapunov y su implementación</h3>
+
+    <p>Para cada valor de ρ en <code>rhos_barrido</code>, el código ejecuta una versión reducida del algoritmo de Benettin: 100 pasos (en lugar de 250) y tolerancia por defecto (en lugar de <code>1e-8</code>). El resultado es una estimación aproximada de $\lambda_{\max}(\rho)$.</p>
+
+    <p>La línea <code>lyaps.append(s_log / 10.0)</code> divide por el tiempo total ($100 \times 0.1 = 10$) para obtener el promedio temporal.</p>
+
+    <div class="warn callout">
+      <div class="callout-title">⚠️ Limitación de este barrido</div>
+      <p>El mini-Benettin con 100 pasos es menos preciso que el cálculo del Bloque 4 (con 250 pasos y tolerancias más estrictas). Es una concesión de velocidad sobre precisión: calcular Lyapunov exactamente para 9 valores de ρ sería muy costoso computacionalmente. Para un análisis cuantitativo preciso, se deberían aumentar los pasos y las tolerancias.</p>
+    </div>
+
+    <h3 id="sec-6-hopf">La bifurcación de Hopf subcrítica</h3>
+
+    <p>La línea vertical en $\rho_H \approx 24.74$ marca la <strong>bifurcación de Hopf subcrítica</strong>. En este valor de ρ ocurre una transición cualitativamente importante en el sistema.</p>
+
+    <p>Para $\rho < 1$: el origen $(0,0,0)$ es el único atractor estable.</p>
+    <p>Para $1 < \rho < \rho_H$: existen los dos puntos fijos estables $C^+$ y $C^-$.</p>
+    <p>Para $\rho \gtrsim \rho_H$: los puntos fijos pierden su estabilidad en una bifurcación de Hopf. En lugar de converger suavemente a $C^+$ o $C^-$, el sistema empieza a orbitar a su alrededor. Para $\rho = 28$, esto resulta en el caos observado.</p>
+
+    <div class="insight callout">
+      <div class="callout-title">🔬 ¿Qué es exactamente una bifurcación de Hopf?</div>
+      <p>Una bifurcación de Hopf ocurre cuando un punto fijo pierde su estabilidad porque dos autovalores complejos conjugados del jacobiano del sistema cruzan el eje imaginario (la parte real pasa de negativa a positiva). En ese momento, el punto fijo deja de ser un atractor estable y aparece una solución oscilatoria (ciclo límite). En el caso de Lorenz, la bifurcación es <em>subcrítica</em>, lo que significa que el ciclo límite que emerge es inestable. Esto es lo que lleva al comportamiento caótico en lugar de oscilaciones simples.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 7: BLOQUE 6 - POINCARÉ
+  ========================================================= -->
+  <section class="section" id="sec-7">
+    <div class="section-header">
+      <div class="section-num green">6</div>
+      <div>
+        <div class="section-subtitle">Bloque 6</div>
+        <h2>Sección de Poincaré</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 244–269</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_6_seccion_poincare</span>(z_corte=<span class="nb">27.0</span>):
+    sol = simular([<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>], (<span class="nb">0.0</span>, <span class="nb">120.0</span>), np.linspace(<span class="nb">10.0</span>, <span class="nb">120.0</span>, <span class="nb">15000</span>))
+    x, y, z = sol.y
+    cruces_x, cruces_y = [], []
+
+    <span class="cm"># Detectar cruces de z_corte de abajo hacia arriba con interpolación lineal</span>
+    <span class="kw">for</span> k <span class="kw">in</span> range(len(z) - <span class="nb">1</span>):
+        <span class="kw">if</span> z[k] &lt; z_corte <span class="kw">and</span> z[k + <span class="nb">1</span>] &gt;= z_corte:
+            frac = (z_corte - z[k]) / (z[k + <span class="nb">1</span>] - z[k])
+            xi = x[k] + frac * (x[k + <span class="nb">1</span>] - x[k])
+            yi = y[k] + frac * (y[k + <span class="nb">1</span>] - y[k])
+            <span class="cm"># dz/dt = x*y - beta*z &gt; 0</span>
+            <span class="kw">if</span> (xi * yi - (<span class="nb">8.0</span> / <span class="nb">3.0</span>) * z_corte) &gt; <span class="nb">0</span>:
+                cruces_x.append(xi)
+                cruces_y.append(yi)
+
+    ax.scatter(cruces_x, cruces_y, ...)
+    <span class="kw">return</span> len(cruces_x)</pre>
+    </div>
+
+    <h3>¿Qué es una sección de Poincaré?</h3>
+
+    <p>Una sección de Poincaré es una técnica para estudiar un sistema continuo en tres dimensiones "fotografiando" solo los instantes en que la trayectoria atraviesa un plano elegido. En lugar de ver la curva continua en el espacio 3D, vemos solo los puntos de intersección con ese plano.</p>
+
+    <p>Esta reducción de 3D → 2D es muy poderosa: si el sistema fuera periódico simple, veríamos un número fijo de puntos (uno por período). Si fuera cuasiperiódico, veríamos una curva cerrada. Si es caótico, veremos una nube de puntos con estructura fractal.</p>
+
+    <h3>¿Por qué z = 27?</h3>
+
+    <p>El valor $z = 27$ es una elección informada: es aproximadamente el valor de $z$ en los puntos fijos $C^+$ y $C^-$ (que están en $z^* = \rho - 1 = 27$). Esto significa que el plano $z = 27$ pasa justo por las "cinturas" de las dos espirales del atractor, donde la trayectoria las cruza regularmente. Un plano mal elegido podría cortar muy pocas veces o dar una geometría difícil de interpretar.</p>
+
+    <h3 id="sec-7-deteccion">Detección de cruces: el bucle</h3>
+
+    <p>El bucle <code>for k in range(len(z) - 1)</code> recorre todos los pares consecutivos de puntos de la trayectoria. Para cada par $(k, k+1)$, verifica si el plano $z = 27$ está entre ellos:</p>
+
+    <div class="code-block">
+      <div class="code-label">Condición de cruce</div>
+      <pre><span class="kw">if</span> z[k] &lt; z_corte <span class="kw">and</span> z[k + <span class="nb">1</span>] &gt;= z_corte:  <span class="cm"># Cruce ascendente</span></pre>
+    </div>
+
+    <p>Esto detecta cuando la trayectoria pasa de estar debajo del plano ($z_k < 27$) a estar arriba o exactamente en él ($z_{k+1} \geq 27$).</p>
+
+    <h3 id="sec-7-interp">Interpolación lineal</h3>
+
+    <p>Los puntos de la solución numérica no caen exactamente en $z = 27$; solo sabemos que el cruce ocurre <em>entre</em> los instantes $k$ y $k+1$. Para obtener las coordenadas $x$ e $y$ en el momento exacto del cruce, se usa interpolación lineal:</p>
+
+    <div class="eq-block">
+      $$f = \frac{z_{\text{corte}} - z_k}{z_{k+1} - z_k}, \quad x_i = x_k + f\,(x_{k+1} - x_k), \quad y_i = y_k + f\,(y_{k+1} - y_k)$$
+    </div>
+
+    <p>El parámetro $f$ (llamado <code>frac</code> en el código) vale 0 si el cruce ocurre exactamente en $k$, y 1 si ocurre exactamente en $k+1$. Para cualquier valor intermedio, la interpolación da la posición estimada en el momento del cruce.</p>
+
+    <h3 id="sec-7-dzdt">La condición dz/dt &gt; 0</h3>
+
+    <div class="code-block">
+      <div class="code-label">Verificación de la dirección del cruce</div>
+      <pre><span class="kw">if</span> (xi * yi - (<span class="nb">8.0</span> / <span class="nb">3.0</span>) * z_corte) &gt; <span class="nb">0</span>:</pre>
+    </div>
+
+    <p>Esta condición evalúa directamente la ecuación del sistema: $\dot{z} = xy - \beta z$. En el punto interpolado $(x_i, y_i, z_{\text{corte}})$:</p>
+
+    <div class="eq-block">
+      $$\dot{z} = x_i y_i - \frac{8}{3} \cdot 27 > 0$$
+    </div>
+
+    <p>¿Por qué exigir $\dot{z} > 0$? Porque queremos contar solo los cruces <em>ascendentes</em> (la trayectoria pasa el plano de abajo hacia arriba). En un sistema 3D, la trayectoria puede cruzar el mismo plano en ambas direcciones. Si contáramos ambas direcciones, obtendríamos una sección con estructura diferente. La elección de solo cruces ascendentes es una convención que garantiza que siempre contamos los mismos tipos de eventos dinámicos.</p>
+
+    <div class="note callout">
+      <div class="callout-title">🔎 ¿Por qué la condición de arriba ya no es suficiente?</div>
+      <p>La condición <code>z[k] &lt; z_corte and z[k+1] &gt;= z_corte</code> garantiza que el punto va de abajo hacia arriba entre los dos instantes discretos. Pero con una alta densidad de puntos, puede haber casos donde la trayectoria toca el plano tangencialmente (sube, llega a z=27, y baja sin llegar a cruzarlo de verdad). La verificación adicional de $\dot{z} > 0$ descarta esos casos, usando la información exacta de la ecuación diferencial.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 8: BLOQUE 7 - BIFURCACIONES
+  ========================================================= -->
+  <section class="section" id="sec-8">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div>
+        <div class="section-subtitle">Bloque 7</div>
+        <h2>Diagrama de Bifurcaciones (ρ vs. z_max)</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 275–296</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_7_diagrama_bifurcaciones</span>(rho_min=<span class="nb">10.0</span>, rho_max=<span class="nb">38.0</span>, n_rhos=<span class="nb">60</span>):
+    rhos = np.linspace(rho_min, rho_max, n_rhos)
+    todos_rhos, todos_z_max = [], []
+
+    <span class="kw">for</span> r <span class="kw">in</span> rhos:
+        <span class="cm"># Descartar transitorio (evaluar en [15, 32])</span>
+        sol = simular([<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>], (<span class="nb">0.0</span>, <span class="nb">32.0</span>), np.linspace(<span class="nb">15.0</span>, <span class="nb>32.0</span>, <span class="nb">2000</span>), rho=r)
+        z = sol.y[<span class="nb">2</span>]
+        <span class="cm"># Picos locales: z[k-1] &lt; z[k] &gt; z[k+1]</span>
+        picos = z[<span class="nb">1</span>:-<span class="nb">1</span>][(z[<span class="nb">1</span>:-<span class="nb">1</span>] &gt; z[:-<span class="nb">2</span>]) &amp; (z[<span class="nb">1</span>:-<span class="nb">1</span>] &gt; z[<span class="nb">2</span>:])]
+        todos_rhos.extend([r] * len(picos))
+        todos_z_max.extend(picos)
+
+    ax.scatter(todos_rhos, todos_z_max, s=<span class="nb">4</span>, ...)
+    ax.axvline(<span class="nb">24.74</span>, ...)</pre>
+    </div>
+
+    <h3>¿Qué es un diagrama de bifurcaciones?</h3>
+
+    <p>Un diagrama de bifurcaciones muestra cómo cambia la estructura de la solución asintótica de un sistema dinámico al variar un parámetro de control. En este caso, el eje x es $\rho$ y el eje y son los valores que alcanzan los máximos locales de $z(t)$ en el régimen estacionario.</p>
+
+    <h3 id="sec-8-picos">Detección de máximos locales: indexado de arrays</h3>
+
+    <div class="code-block">
+      <div class="code-label">La línea clave</div>
+      <pre>picos = z[<span class="nb">1</span>:-<span class="nb">1</span>][(z[<span class="nb">1</span>:-<span class="nb">1</span>] &gt; z[:-<span class="nb">2</span>]) &amp; (z[<span class="nb">1</span>:-<span class="nb">1</span>] &gt; z[<span class="nb">2</span>:])]</pre>
+    </div>
+
+    <p>Esta línea parece compleja, pero su lógica es clara. Un máximo local en el índice $k$ satisface: $z_{k-1} < z_k$ y $z_k > z_{k+1}$.</p>
+
+    <p>En NumPy, se puede expresar esto de forma vectorial:</p>
+    <ul>
+      <li><code>z[1:-1]</code>: todos los elementos excepto el primero y el último (los candidatos a ser picos).</li>
+      <li><code>z[:-2]</code>: todos los elementos excepto los dos últimos (los vecinos de la izquierda).</li>
+      <li><code>z[2:]</code>: todos los elementos excepto los dos primeros (los vecinos de la derecha).</li>
+      <li><code>(z[1:-1] &gt; z[:-2])</code>: array booleano que es <code>True</code> donde el elemento es mayor que su vecino izquierdo.</li>
+      <li><code>&amp;</code>: operador AND elemento a elemento entre dos arrays booleanos.</li>
+      <li>El resultado final: <code>z[1:-1][mask_picos]</code> selecciona solo los valores donde ambas condiciones son verdaderas.</li>
+    </ul>
+
+    <div class="note callout">
+      <div class="callout-title">📌 Por qué se usan máximos de z y no de x o y</div>
+      <p>La variable $z$ es siempre positiva y sus máximos locales ocurren cuando la trayectoria llega a la parte superior de cada "lóbulo" del atractor. Esta es una elección canónica en la literatura de caos: los máximos de $z$ son indicadores robustos del comportamiento dinámico del sistema. Además, la cantidad de máximos distintos está directamente relacionada con la complejidad del atractor.</p>
+    </div>
+
+    <h3 id="sec-8-lectura">Cómo leer el diagrama</h3>
+
+    <table>
+      <thead><tr><th>Patrón en el diagrama</th><th>Significado dinámico</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Un solo punto por valor de ρ</td>
+          <td>El sistema converge a un punto fijo. z siempre alcanza el mismo máximo.</td>
+        </tr>
+        <tr>
+          <td>Pocos puntos discretos (2, 4, 8...)</td>
+          <td>Oscilación periódica o cuasiperiódica. Los máximos alternan entre un número finito de valores.</td>
+        </tr>
+        <tr>
+          <td>Nube densa de puntos continua</td>
+          <td>Comportamiento caótico. Los máximos nunca se repiten exactamente: llenan un intervalo continuo.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>La línea vertical en $\rho_H \approx 24.74$ marca nuevamente la bifurcación de Hopf. A partir de ese valor, el diagrama pasa de tener pocos puntos aislados a tener una nube densa, señalando la transición al caos.</p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 9: BLOQUE 8 - ANIMACIÓN
+  ========================================================= -->
+  <section class="section" id="sec-9">
+    <div class="section-header">
+      <div class="section-num red">8</div>
+      <div>
+        <div class="section-subtitle">Bloque 8</div>
+        <h2>Animación de la Trayectoria 3D (GIF)</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 302–333 (completo)</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_8_animacion</span>(t, x, y, z):
+    <span class="cm"># Submuestrear a 1000 puntos para optimizar generación</span>
+    sub = max(<span class="nb">1</span>, len(t) // <span class="nb">1000</span>)
+    xs, ys, zs = x[::sub], y[::sub], z[::sub]
+
+    fig = plt.figure(figsize=(<span class="nb">7</span>, <span class="nb">6</span>))
+    ax = fig.add_subplot(projection=<span class="st">"3d"</span>)
+    ax.set_xlim(xs.min() - <span class="nb">2</span>, xs.max() + <span class="nb">2</span>)
+    ax.set_ylim(ys.min() - <span class="nb">2</span>, ys.max() + <span class="nb">2</span>)
+    ax.set_zlim(zs.min() - <span class="nb">2</span>, zs.max() + <span class="nb">2</span>)
+    ax.set(title=<span class="st">"Evolución Dinámica en el Atractor de Lorenz (3D)"</span>,
+           xlabel=<span class="st">"x"</span>, ylabel=<span class="st">"y"</span>, zlabel=<span class="st">"z"</span>)
+    ax.view_init(elev=<span class="nb">22</span>, azim=<span class="nb">-60</span>)
+
+    linea, = ax.plot([], [], [], color=COLOR_TRAZADO, lw=<span class="nb">0.9</span>, alpha=<span class="nb">0.9</span>)
+    cabeza, = ax.plot([], [], [], marker=<span class="st">"o"</span>, color=COLOR_ALT, markersize=<span class="nb">6</span>)
+
+    n_frames = <span class="nb">100</span>
+    paso = len(xs) // n_frames
+
+    <span class="kw">def</span> <span class="fn">actualizar</span>(frame):
+        fin = min(len(xs), (frame + <span class="nb">1</span>) * paso)
+        linea.set_data(xs[:fin], ys[:fin])
+        linea.set_3d_properties(zs[:fin])
+        <span class="kw">if</span> fin &gt; <span class="nb">0</span>:
+            cabeza.set_data([xs[fin - <span class="nb">1</span>]], [ys[fin - <span class="nb">1</span>]])
+            cabeza.set_3d_properties([zs[fin - <span class="nb">1</span>]])
+        <span class="kw">return</span> linea, cabeza
+
+    anim = FuncAnimation(fig, actualizar, frames=n_frames, interval=<span class="nb">100</span>, blit=<span class="kw">False</span>)
+    anim.save(os.path.join(CARPETA_SALIDA, <span class="st">"08_animacion_lorenz.gif"</span>),
+              writer=PillowWriter(fps=<span class="nb">10</span>))
+    print(<span class="st">"✓ Bloque 8 completado: Animación 3D guardada como GIF."</span>)
+    <span class="kw">return</span> anim</pre>
+    </div>
+
+    <h3 id="sec-9-sub">Paso 1: El submuestreo</h3>
+
+    <div class="code-block">
+      <div class="code-label">Submuestreo</div>
+      <pre>sub = max(<span class="nb">1</span>, len(t) // <span class="nb">1000</span>)
+xs, ys, zs = x[::sub], y[::sub], z[::sub]</pre>
+    </div>
+
+    <p>La simulación base tiene 4000 puntos (definidos en <code>main()</code> con <code>np.linspace(0, 40, 4000)</code>). Para la animación solo se necesitan alrededor de 1000. El cálculo:</p>
+
+    <ul>
+      <li><code>len(t) // 1000</code>: división entera de 4000 por 1000 = 4. Entonces <code>sub = max(1, 4) = 4</code>.</li>
+      <li><code>x[::4]</code>: selecciona uno de cada 4 elementos del array. Resultado: aproximadamente 1000 puntos.</li>
+      <li><code>max(1, ...)</code>: garantiza que nunca se use paso 0 (si la trayectoria tuviera menos de 1000 puntos, <code>sub = 1</code> y se usarían todos).</li>
+    </ul>
+
+    <p><strong>¿Por qué reducir?</strong> Cada cuadro de la animación necesita redibujar la trayectoria completa acumulada. Con 4000 puntos y 100 cuadros, el último cuadro dibujaría 4000 segmentos. Con 1000 puntos, solo 1000. La diferencia visual es imperceptible (el trazado fino del atractor sigue siendo suave), pero la velocidad de generación mejora significativamente.</p>
+
+    <h3 id="sec-9-fig">Paso 2: La figura y los objetos gráficos</h3>
+
+    <div class="code-block">
+      <div class="code-label">Inicialización de los objetos animados</div>
+      <pre>linea, = ax.plot([], [], [], color=COLOR_TRAZADO, lw=<span class="nb">0.9</span>, alpha=<span class="nb">0.9</span>)
+cabeza, = ax.plot([], [], [], marker=<span class="st">"o"</span>, color=COLOR_ALT, markersize=<span class="nb">6</span>)</pre>
+    </div>
+
+    <p>Se crean dos objetos gráficos inicializados <strong>vacíos</strong> (con listas vacías <code>[]</code>). La coma después de <code>linea</code> y <code>cabeza</code> es importante: <code>ax.plot()</code> devuelve una lista de objetos Line2D, y la coma desempaqueta esa lista de un elemento, dejando solo el objeto. Sin la coma, <code>linea</code> sería una lista, no el objeto en sí.</p>
+
+    <ul>
+      <li><strong><code>linea</code></strong>: representa la trayectoria acumulada. En cada cuadro se actualiza con todos los puntos hasta ese momento.</li>
+      <li><strong><code>cabeza</code></strong>: es el punto móvil (marcador circular rojo) que representa la posición actual del sistema. En cada cuadro, se mueve al último punto incorporado.</li>
+    </ul>
+
+    <h3>Paso 3: Los parámetros de la animación</h3>
+
+    <div class="var-grid">
+      <div class="var-card">
+        <code>n_frames = 100</code>
+        <p>Número total de cuadros de la animación. El GIF tendrá 100 fotogramas.</p>
+      </div>
+      <div class="var-card">
+        <code>paso = len(xs) // n_frames</code>
+        <p>Cuántos puntos de la trayectoria se revelan en cada cuadro. Con ~1000 puntos y 100 cuadros: paso ≈ 10.</p>
+      </div>
+    </div>
+
+    <h3 id="sec-9-actualizar">Paso 4: La función <code>actualizar(frame)</code> explicada en detalle</h3>
+
+    <div class="code-block">
+      <div class="code-label">La función de actualización cuadro a cuadro</div>
+      <pre><span class="kw">def</span> <span class="fn">actualizar</span>(frame):
+    fin = min(len(xs), (frame + <span class="nb">1</span>) * paso)      <span class="cm"># ¿Hasta qué punto mostramos?</span>
+    linea.set_data(xs[:fin], ys[:fin])              <span class="cm"># Actualizar x e y de la trayectoria</span>
+    linea.set_3d_properties(zs[:fin])               <span class="cm"># Actualizar z de la trayectoria</span>
+    <span class="kw">if</span> fin &gt; <span class="nb">0</span>:
+        cabeza.set_data([xs[fin - <span class="nb">1</span>]], [ys[fin - <span class="nb">1</span>]])   <span class="cm"># Mover la cabeza a x,y final</span>
+        cabeza.set_3d_properties([zs[fin - <span class="nb">1</span>]])           <span class="cm"># Mover la cabeza a z final</span>
+    <span class="kw">return</span> linea, cabeza</pre>
+    </div>
+
+    <p>Esta función se llama una vez por cada cuadro de la animación. <code>FuncAnimation</code> le pasa el número de cuadro (<code>frame</code>) desde 0 hasta 99.</p>
+
+    <h4>Cálculo del límite de puntos</h4>
+
+    <p>La variable <code>fin</code> determina cuántos puntos se muestran en el cuadro actual:</p>
+
+    <div class="eq-block">
+      $$\text{fin} = \min\!\bigl(\text{len}(xs),\; (\text{frame}+1) \times \text{paso}\bigr)$$
+    </div>
+
+    <p>Con <code>paso = 10</code>:</p>
+    <ul>
+      <li>Cuadro 0: <code>fin = min(1000, 10) = 10</code> → muestra los primeros 10 puntos.</li>
+      <li>Cuadro 1: <code>fin = min(1000, 20) = 20</code> → muestra los primeros 20 puntos.</li>
+      <li>Cuadro 49: <code>fin = min(1000, 500) = 500</code> → muestra la mitad de la trayectoria.</li>
+      <li>Cuadro 99: <code>fin = min(1000, 1000) = 1000</code> → muestra toda la trayectoria.</li>
+    </ul>
+
+    <p>El <code>min(...)</code> protege contra el caso en que <code>(frame+1)*paso</code> supere la longitud del array.</p>
+
+    <h4>Actualización de la trayectoria acumulada</h4>
+
+    <p>En Matplotlib, los objetos 3D necesitan dos llamadas separadas para actualizar sus coordenadas:</p>
+    <ul>
+      <li><code>linea.set_data(xs[:fin], ys[:fin])</code>: actualiza las coordenadas x e y del segmento.</li>
+      <li><code>linea.set_3d_properties(zs[:fin])</code>: actualiza la coordenada z del segmento.</li>
+    </ul>
+
+    <p>No hay una sola función <code>set_data_3d(x, y, z)</code> en las versiones estándar de Matplotlib; se necesitan estas dos llamadas separadas. Este es un detalle específico de la API 3D de Matplotlib.</p>
+
+    <h4>Actualización de la cabeza (punto móvil)</h4>
+
+    <p>La "cabeza" representa la posición actual del punto que "dibuja" la trayectoria. Para moverla al último punto incorporado:</p>
+    <ul>
+      <li><code>xs[fin - 1]</code>: el último punto en x. Se pasa como lista de un elemento <code>[xs[fin-1]]</code> porque Matplotlib espera arrays.</li>
+      <li>La condición <code>if fin > 0</code> evita acceder a <code>xs[-1]</code> (que en Python indexaría el último elemento del array, no el esperado) cuando el cuadro 0 aún no tiene puntos.</li>
+    </ul>
+
+    <h4>El desarrollo de la animación de principio a fin</h4>
+
+    <ol>
+      <li><strong>Cuadro 0:</strong> La trayectoria muestra solo los primeros 10 puntos (cerca del origen). La cabeza está en el punto 10. El atractor apenas empieza a dibujarse.</li>
+      <li><strong>Cuadros 1–49:</strong> La trayectoria crece progresivamente. La cabeza se mueve a lo largo del atractor. Se puede ver cómo la trayectoria empieza a orbitar alrededor de un centro, luego salta al otro, etc.</li>
+      <li><strong>Cuadros 50–99:</strong> La trayectoria casi completa el atractor. En el cuadro 99, se ven todos los 1000 puntos y la cabeza está en el último punto.</li>
+    </ol>
+
+    <h3 id="sec-9-funcanim">Paso 5: <code>FuncAnimation</code> y el guardado como GIF</h3>
+
+    <div class="code-block">
+      <div class="code-label">Creación y guardado de la animación</div>
+      <pre>anim = FuncAnimation(fig, actualizar, frames=n_frames, interval=<span class="nb">100</span>, blit=<span class="kw">False</span>)
+anim.save(os.path.join(CARPETA_SALIDA, <span class="st">"08_animacion_lorenz.gif"</span>),
+          writer=PillowWriter(fps=<span class="nb">10</span>))</pre>
+    </div>
+
+    <table>
+      <thead><tr><th>Parámetro</th><th>Valor</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>fig</code></td>
+          <td>—</td>
+          <td>La figura sobre la que se anima.</td>
+        </tr>
+        <tr>
+          <td><code>actualizar</code></td>
+          <td>—</td>
+          <td>La función que se llama para cada cuadro. Recibe el número de cuadro y devuelve los objetos modificados.</td>
+        </tr>
+        <tr>
+          <td><code>frames</code></td>
+          <td>100</td>
+          <td>Total de cuadros. <code>actualizar</code> se llamará con 0, 1, 2, …, 99.</td>
+        </tr>
+        <tr>
+          <td><code>interval</code></td>
+          <td>100</td>
+          <td>Tiempo en milisegundos entre cuadros cuando se muestra en pantalla. No afecta al GIF guardado.</td>
+        </tr>
+        <tr>
+          <td><code>blit</code></td>
+          <td>False</td>
+          <td>Si fuera <code>True</code>, Matplotlib reemplazaría solo los objetos devueltos por <code>actualizar</code> (más eficiente pero con problemas en gráficos 3D). Con <code>False</code> se redibuja toda la figura en cada cuadro.</td>
+        </tr>
+        <tr>
+          <td><code>PillowWriter(fps=10)</code></td>
+          <td>—</td>
+          <td>El escritor que convierte los cuadros en un GIF animado a 10 cuadros por segundo.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note callout">
+      <div class="callout-title">📌 ¿Por qué blit=False para gráficos 3D?</div>
+      <p><code>blit=True</code> es más eficiente porque no redibuja el fondo: solo actualiza los objetos que cambian. Pero en gráficos 3D de Matplotlib, la perspectiva y los ejes también necesitan actualizarse, lo que causa problemas visuales con blit activado. <code>blit=False</code> es el modo seguro para 3D, aunque más lento.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN 10: BLOQUE 9 - VERIFICACIÓN
+  ========================================================= -->
+  <section class="section" id="sec-10">
+    <div class="section-header">
+      <div class="section-num green">9</div>
+      <div>
+        <div class="section-subtitle">Bloque 9</div>
+        <h2>Resumen de Verificación Numérica</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 339–361</div>
+      <pre><span class="kw">def</span> <span class="fn">bloque_9_verificacion</span>(sol, lambda_est, n_cruces):
+    pruebas = [
+        (<span class="st">"Simulación temporal completa (RK45)"</span>, sol.status == <span class="nb">0</span>),
+        (<span class="st">"Estabilidad numérica (sin NaN ni Inf)"</span>,
+            not (np.isnan(sol.y).any() <span class="kw">or</span> np.isinf(sol.y).any())),
+        (f<span class="st">"Exponente de Lyapunov positivo ({lambda_est:.3f} &gt; 0)"</span>, lambda_est &gt; <span class="nb">0</span>),
+        (f<span class="st">"Concordancia teórica (ref: 0.906, error: {abs(lambda_est - 0.9056)/0.9056*100:.1f}%)"</span>,
+            abs(lambda_est - <span class="nb">0.9056</span>) / <span class="nb">0.9056</span> &lt; <span class="nb">0.10</span>),
+        (f<span class="st">"Sección de Poincaré representativa ({n_cruces} cruces)"</span>, n_cruces &gt; <span class="nb">20</span>)
+    ]
+    <span class="kw">for</span> nombre, ok <span class="kw">in</span> pruebas:
+        print(f<span class="st">" {'✅ [SUPERADA]' if ok else '❌ [FALLIDA]'} {nombre}"</span>)</pre>
+    </div>
+
+    <h3>Las cinco verificaciones y qué comprueban</h3>
+
+    <table>
+      <thead><tr><th>#</th><th>Verificación</th><th>¿Qué fallaría si no se supera?</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><code>sol.status == 0</code>: La integración completó el intervalo sin errores.</td>
+          <td>Si el integrador no pudo completar la integración (por ejemplo, si las tolerancias son demasiado estrictas y el paso adaptativo se hace infinitesimalmente pequeño), <code>status</code> sería diferente de 0.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><code>not (np.isnan(...).any() or np.isinf(...).any())</code>: Ningún valor de la solución es NaN o infinito.</td>
+          <td>En sistemas muy caóticos, pueden ocurrir desbordamientos numéricos (overflow) que producen valores infinitos o NaN. Esto indicaría que la solución es numéricamente inestable.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><code>lambda_est > 0</code>: El exponente de Lyapunov es positivo.</td>
+          <td>Si $\lambda \leq 0$, el sistema no sería caótico con los parámetros estándar, lo que indicaría un error en el cálculo.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Error relativo respecto a 0.9056 &lt; 10%.</td>
+          <td>Si el error fuera mayor al 10%, el algoritmo de Benettin no estaría convergiendo adecuadamente con los parámetros usados (n_pasos, tau).</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><code>n_cruces > 20</code>: La sección de Poincaré tiene suficientes puntos.</td>
+          <td>Si hay muy pocos cruces, la sección de Poincaré no es representativa del atractor. Esto podría ocurrir si la integración fuera muy corta o el plano elegido cortara raramente la trayectoria.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight callout">
+      <div class="callout-title">🔬 ¿Por qué automatizar estas verificaciones?</div>
+      <p>En física computacional, es fundamental tener pruebas que validen que los resultados numéricos son correctos y no son artefactos de la implementación. Estas verificaciones automáticas sirven como "tests de regresión": si alguien modifica el código y algo falla, el programa lo reporta inmediatamente. También sirven para comunicar al lector cuáles son los criterios de éxito del análisis.</p>
+    </div>
+
+    <h4>El gráfico de verificación</h4>
+
+    <p>El bloque genera también un gráfico PNG con el resumen en formato de texto monoespaciado. Esto se hace para incluir el reporte de verificación junto con los otros resultados gráficos del análisis, en lugar de depender solo de la salida de la consola.</p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       SECCIÓN MAIN
+  ========================================================= -->
+  <section class="section" id="sec-main">
+    <div class="section-header">
+      <div class="section-num">★</div>
+      <div>
+        <div class="section-subtitle">Orquestación</div>
+        <h2>La Función <code>main()</code> y el Punto de Entrada</h2>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">Python · Líneas 367–393</div>
+      <pre><span class="kw">def</span> <span class="fn">main</span>():
+    print(<span class="st">"========================================================="</span>)
+    print(<span class="st">" EJECUTANDO ANÁLISIS DE LORENZ (VERSIÓN PEDAGÓGICA FINAL)"</span>)
+    print(<span class="st">"=========================================================\n"</span>)
+
+    <span class="cm"># Simulación base de t in [0, 40]</span>
+    sol = simular([<span class="nb">1.0</span>, <span class="nb">1.0</span>, <span class="nb">1.0</span>], (<span class="nb">0.0</span>, <span class="nb">40.0</span>), np.linspace(<span class="nb">0.0</span>, <span class="nb">40.0</span>, <span class="nb">4000</span>))
+    t, (x, y, z) = sol.t, sol.y
+
+    bloque_1_evolucion_temporal(t, x, y, z)
+    bloque_2_atractor_3d(t, x, y, z)
+    bloque_3_sensibilidad()
+    lambda_est = bloque_4_lyapunov()
+    bloque_5_influencia_rho()
+    n_cruces = bloque_6_seccion_poincare()
+    bloque_7_diagrama_bifurcaciones()
+    anim = bloque_8_animacion(t, x, y, z)
+    bloque_9_verificacion(sol, lambda_est, n_cruces)
+
+    print(<span class="st">"\n========================================================="</span>)
+    print(<span class="st">" ¡Todos los análisis generaron exactamente los mismos resultados!"</span>)
+    print(f<span class="st">" Guardados en: {CARPETA_SALIDA}"</span>)
+    print(<span class="st">"========================================================="</span>)
+    plt.show()
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    main()</pre>
+    </div>
+
+    <h3>La simulación base</h3>
+
+    <p>Lo primero que hace <code>main()</code> es integrar el sistema desde $(1, 1, 1)$ durante 40 unidades de tiempo con 4000 puntos de salida. Esta simulación base es compartida por los bloques 1, 2 y 8 (evolución temporal, atractor 3D y animación). Los bloques 3, 4, 5, 6 y 7 realizan sus propias integraciones adicionales con distintos parámetros.</p>
+
+    <p>La línea <code>t, (x, y, z) = sol.t, sol.y</code> desempaqueta la solución: <code>sol.y</code> es una matriz de forma <code>(3, 4000)</code>, y al escribir <code>(x, y, z) = sol.y</code>, Python asigna cada fila a una variable separada.</p>
+
+    <h3>El patrón <code>if __name__ == "__main__"</code></h3>
+
+    <p>Esta construcción es un patrón estándar en Python. Cuando Python carga un archivo, le asigna a la variable especial <code>__name__</code> el valor <code>"__main__"</code> si ese archivo es el que se ejecutó directamente, o el nombre del módulo si fue importado por otro archivo.</p>
+
+    <p>Al envolver <code>main()</code> en esta condición, se logra que:</p>
+    <ul>
+      <li>Si se ejecuta <code>python Lorenz_final.py</code> directamente, el análisis completo corre.</li>
+      <li>Si otro script importa este archivo (<code>import Lorenz_final</code>), las funciones quedan disponibles pero el análisis no se ejecuta automáticamente.</li>
+    </ul>
+
+    <h3>Flujo completo del programa</h3>
+
+    <div class="flow-diagram">
+      <div class="flow-box">main()<br><small>Simulación base</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 1<br><small>t vs x,y,z</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 2<br><small>Atractor 3D</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 3<br><small>Sensibilidad</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 4<br><small>Lyapunov</small></div>
+    </div>
+    <div class="flow-diagram" style="margin-top:0.5rem;">
+      <div class="flow-box">Bloque 5<br><small>Influencia ρ</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 6<br><small>Poincaré</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 7<br><small>Bifurcaciones</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 8<br><small>Animación GIF</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Bloque 9<br><small>Verificación</small></div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- =========================================================
+       QUIZ
+  ========================================================= -->
+  <section class="section quiz-section" id="sec-quiz">
+    <div class="section-header">
+      <div class="section-num">?</div>
+      <div>
+        <div class="section-subtitle">Autoevaluación</div>
+        <h2>Quiz de Comprensión</h2>
+      </div>
+    </div>
+
+    <p>Respondé estas cinco preguntas para verificar que realmente entendiste el programa. Cada respuesta incorrecta incluye una explicación de por qué no es correcta.</p>
+
+    <!-- Q1 -->
+    <div class="quiz-card" id="q1">
+      <div class="q-num">Pregunta 1 de 5</div>
+      <div class="q-text">¿Por qué el algoritmo de Benettin renormaliza la perturbación en cada paso, en lugar de simplemente dejar que las dos trayectorias evolucionen libremente?</div>
+      <ul class="options">
+        <li><button onclick="answer(this,'wrong','q1')">Para mejorar la precisión numérica del integrador RK45.</button></li>
+        <li><button onclick="answer(this,'correct','q1')">Para evitar que la separación crezca tanto que las trayectorias estén en regiones distintas del atractor y ya no midan el mismo exponente local.</button></li>
+        <li><button onclick="answer(this,'wrong','q1')">Para asegurarse de que ambas trayectorias permanezcan en el atractor y no diverjan hacia el infinito.</button></li>
+        <li><button onclick="answer(this,'wrong','q1')">Porque el atractor de Lorenz no tiene suficiente espacio para que dos trayectorias se alejen indefinidamente.</button></li>
+      </ul>
+      <div class="quiz-feedback" id="fb-q1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card" id="q2">
+      <div class="q-num">Pregunta 2 de 5</div>
+      <div class="q-text">En la sección de Poincaré, ¿por qué se verifica la condición dz/dt &gt; 0 además de detectar el cruce geométrico z[k] &lt; z_corte ≤ z[k+1]?</div>
+      <ul class="options">
+        <li><button onclick="answer(this,'wrong','q2')">Para garantizar que la trayectoria siga la dirección del tiempo, ya que solve_ivp podría integrar hacia atrás.</button></li>
+        <li><button onclick="answer(this,'wrong','q2')">Para descartar los puntos donde la trayectoria pasa exactamente por z = 27 sin cruzar el plano.</button></li>
+        <li><button onclick="answer(this,'correct','q2')">Para seleccionar solo los cruces ascendentes (de abajo hacia arriba) y obtener una sección coherente con una única dirección de cruce.</button></li>
+        <li><button onclick="answer(this,'wrong','q2')">Porque la interpolación lineal introduce errores que se corrigen verificando que la derivada sea positiva.</button></li>
+      </ul>
+      <div class="quiz-feedback" id="fb-q2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card" id="q3">
+      <div class="q-num">Pregunta 3 de 5</div>
+      <div class="q-text">La simulación base en main() usa 4000 puntos en t=[0,40], pero la animación solo usa ~1000 puntos mediante submuestreo. ¿Qué hace exactamente x[::sub] con sub=4?</div>
+      <ul class="options">
+        <li><button onclick="answer(this,'wrong','q3')">Divide el array x en 4 partes iguales y devuelve la primera.</button></li>
+        <li><button onclick="answer(this,'wrong','q3')">Calcula el promedio de cada 4 elementos consecutivos, reduciendo la longitud a un cuarto.</button></li>
+        <li><button onclick="answer(this,'correct','q3')">Selecciona uno de cada 4 elementos: x[0], x[4], x[8], …, x[3996]. El array resultante tiene exactamente 1000 elementos.</button></li>
+        <li><button onclick="answer(this,'wrong','q3')">Elimina los primeros 4 y los últimos 4 elementos del array para evitar artefactos en los bordes.</button></li>
+      </ul>
+      <div class="quiz-feedback" id="fb-q3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card" id="q4">
+      <div class="q-num">Pregunta 4 de 5</div>
+      <div class="q-text">En el diagrama de bifurcaciones, si para un valor de ρ hay un solo punto en el gráfico (un único valor de z_max), ¿qué dice eso sobre el comportamiento del sistema?</div>
+      <ul class="options">
+        <li><button onclick="answer(this,'wrong','q4')">El sistema es altamente caótico: los máximos de z nunca se repiten, pero por casualidad el mismo valor aparece muchas veces.</button></li>
+        <li><button onclick="answer(this,'correct','q4')">El sistema es periódico o converge a un punto fijo: siempre alcanza el mismo máximo, lo que implica movimiento regular (no caótico).</button></li>
+        <li><button onclick="answer(this,'wrong','q4')">La integración numérica falló para ese valor de ρ y solo produjo un punto antes de divergir.</button></li>
+        <li><button onclick="answer(this,'wrong','q4')">El descarte del transitorio eliminó todos los puntos excepto uno.</button></li>
+      </ul>
+      <div class="quiz-feedback" id="fb-q4"></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card" id="q5">
+      <div class="q-num">Pregunta 5 de 5</div>
+      <div class="q-text">¿Cuál es la diferencia entre los parámetros rtol y atol en solve_ivp, y por qué se usan ambos juntos?</div>
+      <ul class="options">
+        <li><button onclick="answer(this,'wrong','q5')">rtol controla el error en el tiempo y atol controla el error en las variables de estado, por separado.</button></li>
+        <li><button onclick="answer(this,'wrong','q5')">rtol es para la parte real de la solución y atol para la parte imaginaria, útil en sistemas complejos.</button></li>
+        <li><button onclick="answer(this,'wrong','q5')">rtol limita el número de pasos del integrador y atol limita el tamaño máximo del paso.</button></li>
+        <li><button onclick="answer(this,'correct','q5')">rtol da un criterio relativo (el error debe ser menor que rtol × |y|) y atol un criterio absoluto (piso mínimo). Se usan juntos porque el criterio relativo falla cuando |y| ≈ 0.</button></li>
+      </ul>
+      <div class="quiz-feedback" id="fb-q5"></div>
+    </div>
+
+    <a href="#sec-intro" class="back-top">↑ Volver al inicio</a>
+  </section>
+
+</main>
+</div>
+
+<script>
+  const feedbacks = {
+    'q1': {
+      'correct': '✅ Correcto. Si las trayectorias se separan exponencialmente sin renormalizar, en pocos pasos están en regiones completamente distintas del atractor. La distancia ya no mide la divergencia local sino algo completamente diferente. El algoritmo de Benettin resuelve esto rescatando la perturbación a su tamaño original d₀ en la dirección de máxima divergencia, para seguir midiendo la tasa de estiramiento local del flujo.',
+      'wrong': 'Incorrecto. El problema no es de precisión del integrador ni de divergencia hacia el infinito (el atractor es acotado). El punto clave es que si la separación crece exponencialmente, después de algunos pasos las dos trayectorias ya están en regiones completamente distintas del atractor, con geometría y dinámica distintas. Renormalizar mantiene la separación pequeña para medir siempre la dinámica local.'
+    },
+    'q2': {
+      'correct': '✅ Correcto. La condición geométrica z[k] < z_corte ≤ z[k+1] detecta cualquier cruce, ya sea ascendente o descendente. Pero si contáramos ambas direcciones, obtendríamos una sección con más puntos y potencialmente doble estructura. Al verificar dz/dt > 0 con la ecuación real del sistema, nos aseguramos de contar solo los cruces donde la trayectoria sube a través del plano, que es la convención estándar.',
+      'wrong': 'Incorrecto. solve_ivp siempre integra hacia adelante en el tiempo. La interpolación lineal no introduce errores que se "corrijan" con la derivada. El motivo real es seleccionar solo una dirección de cruce (ascendente) para obtener una sección de Poincaré coherente.'
+    },
+    'q3': {
+      'correct': '✅ Correcto. La sintaxis x[::4] es un "slice" de Python con paso 4: selecciona x[0], x[4], x[8], ..., x[3996]. Con 4000 elementos y paso 4, el resultado tiene exactamente 1000 elementos. Es una forma eficiente de diezmar un array sin crear copias intermedias.',
+      'wrong': 'Incorrecto. x[::sub] es un "slice" con paso sub. No promedia, no divide en partes, ni elimina bordes. Selecciona directamente uno de cada sub elementos del array original: x[0], x[sub], x[2*sub], etc.'
+    },
+    'q4': {
+      'correct': '✅ Correcto. Si después de descartar el transitorio (t > 15) la señal z(t) siempre alcanza exactamente el mismo valor máximo, significa que el sistema es periódico simple: repite exactamente el mismo ciclo. Hay un solo atractor periódico, y todos sus máximos son iguales. Esto es lo opuesto al caos.',
+      'wrong': 'Incorrecto. Un único valor de z_max por ρ indica comportamiento regular, no caótico ni fallido. La integración funciona correctamente y produce una solución; solo que esa solución tiene un único máximo porque es periódica.'
+    },
+    'q5': {
+      'correct': '✅ Correcto. El criterio combinado es: error ≤ atol + rtol × |y|. Cuando |y| es grande, domina el término relativo (rtol × |y|). Cuando |y| ≈ 0, el término relativo también se hace pequeño y requeriría una precisión imposible; ahí entra atol como piso mínimo. Usar solo rtol causaría problemas cuando la solución pasa por cero.',
+      'wrong': 'Incorrecto. rtol y atol no controlan tiempo, parte real/imaginaria, ni número de pasos. Son dos tipos de criterio de error para el mismo vector de estado: rtol es relativo al tamaño de la solución, y atol es un umbral absoluto que actúa como piso cuando la solución es muy pequeña.'
+    }
+  };
+
+  function answer(btn, type, qId) {
+    // Deshabilitar todos los botones de esta pregunta
+    const card = document.getElementById(qId);
+    const buttons = card.querySelectorAll('button');
+    buttons.forEach(b => b.disabled = true);
+
+    // Marcar el botón elegido
+    btn.classList.add(type);
+
+    // Mostrar feedback
+    const fb = document.getElementById('fb-' + qId);
+    fb.textContent = type === 'correct'
+      ? feedbacks[qId]['correct']
+      : feedbacks[qId]['wrong'];
+    fb.className = 'quiz-feedback show ' + (type === 'correct' ? 'ok' : 'bad');
+  }
+</script>
+
+</body>
+</html>
